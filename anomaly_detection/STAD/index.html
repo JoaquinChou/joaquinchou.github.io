@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://s3.ax1x.com/2021/01/16/sDpk60.png">
 <meta property="og:image" content="https://s3.ax1x.com/2021/01/17/srL9E9.png">
 <meta property="article:published_time" content="2021-01-16T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-01-17T03:39:35.801Z">
+<meta property="article:modified_time" content="2021-01-18T01:17:09.020Z">
 <meta property="article:author" content="Joaquin Chou">
 <meta property="article:tag" content="anomaly_detection">
 <meta name="twitter:card" content="summary">
@@ -62,7 +62,8 @@
 <p>&emsp;&emsp;对于集成的学生，是利用老师与学生之间预测的差异以及学生与学生之间的差异来获得异常图。</p>
 <p><b>3.分割方法新颖</b></p>
 <p>&emsp;&emsp;分割方法新颖，分割异常采用的是输入不同大小的图像块进行多尺度的方法。</p>
-<h2 id="做法"><a href="#做法" class="headerlink" title="做法"></a>做法</h2><h3 id="整体框架"><a href="#整体框架" class="headerlink" title="整体框架"></a>整体框架</h3><p><img src="https://s3.ax1x.com/2021/01/16/sBjh5R.png" alt="sBjh5R.png" border="0" / loading="lazy"></a></p>
+<h2 id="做法"><a href="#做法" class="headerlink" title="做法"></a>做法</h2><h3 id="整体框架"><a href="#整体框架" class="headerlink" title="整体框架"></a>整体框架</h3><img src="https://s3.ax1x.com/2021/01/16/sBjh5R.png" alt="sBjh5R.png" border="0" / loading="lazy">
+
 <p>&emsp;&emsp;本文提出的判别式嵌入的师生框架，可分为三个部分，第一部分是经过<b>预训练的教师网络</b>和<b>M个随机初始化产生的ensemble的学生网络</b>，其中教师网络有利用到<font color='red'><b>正常数据和异常数据</b></font>的图像块去pretrain，第二部分是两个网络对于同一输入的<b>判别式描述</b>，第三部分是<b>多尺度分割模块</b>组成。整个框架训练是采用的是<font color='red'><b>正常的数据集</b></font>的图像块。训练时是通过教师网络的输出的embedding(注意看上图中红色Teacher descriptors)去教导学生如何embed正常的样本（注意看上图中黄色Student predictions），学生网络是通过回归误差和预测的方差去学习的。最后通过3个异常图的加权平均分割出异常。</p>
 <p>&emsp;&emsp;教师网络使用正常和异常的数据来预训练，学生网络只使用正常的数据来训练。采用上述训练方法有两个的好处。</p>
 <p>（1）在测试时遇到异常样本时，由于教师没有教导学生什么是异常样本，但教师知道什么是异常样本，所以学生网络输出会和教师网络输出差异较大；</p>
@@ -82,7 +83,7 @@
 
 
 <p>&emsp;&emsp;举例子来说，在MNIST数据集上，用0作为正常样本，其他数字为异常样本，可以得到如下关于正常样本和异常样本的正态的数据分布图。教师网络是用0-9所有的数据去训练的，学生网络只用正常样本去回归和预测，很明显教师知道什么是正常和什么是异常，学生只知道正常的。所以学生预测出的结果如上所示，对于正常的样本，学生回归误差和预测的方差都偏小，对于异常样本，回归误差和预测方差都偏大。</p>
-<img src="https://s3.ax1x.com/2021/01/16/sDpk60.png" alt="sDpk60.png" border="0" loading="lazy">
+<img src="https://s3.ax1x.com/2021/01/16/sDpk60.png" alt="sDpk60.png" border="0" / loading="lazy">
 
 <h3 id="多尺度分割"><a href="#多尺度分割" class="headerlink" title="多尺度分割"></a>多尺度分割</h3><p>&emsp;&emsp;利用输入多个不同大小的图像块得到的学生网络回归误差和预测的不确定度的异常map进行加权平均，可得到如下结果。</p>
 <img src="https://s3.ax1x.com/2021/01/17/srL9E9.png" alt="srL9E9.png" border="0" / loading="lazy">

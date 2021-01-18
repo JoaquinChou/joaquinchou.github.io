@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://s3.ax1x.com/2020/12/27/r56nhQ.png">
 <meta property="og:image" content="https://s3.ax1x.com/2020/12/27/r56mtg.png">
 <meta property="article:published_time" content="2021-01-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-01-11T07:50:58.375Z">
+<meta property="article:modified_time" content="2021-01-18T01:15:53.633Z">
 <meta property="article:author" content="Joaquin Chou">
 <meta property="article:tag" content="anomaly_detection">
 <meta name="twitter:card" content="summary">
@@ -53,10 +53,10 @@
 <p>&emsp;&emsp;文章中引入了feature compactness loss和feature separateness loss去实现异常在多样性场景中的区分。</p>
 <p><b>3.解决了重建图像的模糊问题</b></p>
 <p>&emsp;&emsp;在MemAE中没有考虑输入同类型的正常场景之间的变化问题和CNN通道容量太大导致的重建模糊问题。本文通过输入的embedding和Memory中所有的embedding进行compact（即输入相似的场景尽量归为同一个项）来解决。</p>
-<h2 id="做法"><a href="#做法" class="headerlink" title="做法"></a>做法</h2><img src="https://s3.ax1x.com/2020/12/27/r56nhQ.png" alt="r56nhQ.png" border="0" loading="lazy">
+<h2 id="做法"><a href="#做法" class="headerlink" title="做法"></a>做法</h2><img src="https://s3.ax1x.com/2020/12/27/r56nhQ.png" alt="r56nhQ.png" border="0" / loading="lazy">
 
 <p>&emsp;&emsp;本文提出MNAD模型，该模型由三个主要部分组成，<b>编码器</b>（用于编码输入和生成查询），<b>解码器</b>（用于重建）和<b>记忆模块</b>（包括场相似场景的记忆以及多样性场景之间的区分）。如上图所示，训练时，将正常样本图像经过编码器生成embedding存于Memory中，通过Memory Read和Memory Update生成的embedding和输入的embedding拼接传给decoder进行重建输出。</p>
-<img src="https://s3.ax1x.com/2020/12/27/r56mtg.png" alt="r56mtg.png" border="0" loading="lazy">
+<img src="https://s3.ax1x.com/2020/12/27/r56mtg.png" alt="r56mtg.png" border="0" / loading="lazy">
 
 <p>&emsp;&emsp;如上图所示，在Memory Read时，当再次输入正常样本时，将输入的某个embedding的向量 $q_t^k$与所有Memory的所有embedding ($p_1,…,p_M$)进行转置和Softmax操作更新权重更新记忆项$\hat p_t^k$，即通过权重更新可使得记忆项中的embedding尽量接近输入的embedding；（主要通过feature compactness loss反映）</p>
 <p>feature compactness loss为<br>$$ L_{compact}=\sum_t^T\sum_k^K\vert\vert q_t^k-p_p\vert\vert_2 $$</p>
