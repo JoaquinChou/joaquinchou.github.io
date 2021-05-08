@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.joaquinchou.com/2020/reading/</loc>
+    <lastmod>2021-05-04</lastmod>
+  </url>
+  <url>
+    <loc>https://www.joaquinchou.com/anomaly_detection/STAD/</loc>
+    <lastmod>2021-01-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.joaquinchou.com/anomaly_detection/MNAD/</loc>
+    <lastmod>2021-01-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.joaquinchou.com/anomaly_detection/MemAE/</loc>
+    <lastmod>2021-01-11</lastmod>
+  </url>
+  <url>
+    <loc>https://www.joaquinchou.com/machine_learning/logistic_regression/</loc>
+    <lastmod>2020-12-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.joaquinchou.com/machine_learning/classification/</loc>
+    <lastmod>2020-12-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.joaquinchou.com/machine_learning/bias_and_variance/</loc>
+    <lastmod>2020-12-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.joaquinchou.com/machine_learning/regression/</loc>
+    <lastmod>2020-12-05</lastmod>
+  </url>
+</urlset> 
