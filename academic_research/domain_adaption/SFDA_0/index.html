@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#9400D3"><meta name="author" content="Joaquin Chou"><meta name="copyright" content="Joaquin Chou"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>无源域适应 | 喵语小站</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{},
+    ...true?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#9400D3"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"www.joaquinchou.com","root":"/","title":"喵星暖暖窝","version":"1.10.11","mode":"time","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"algolia":{"appID":"L0D85KPS1S","apiKey":"715edff2e91248577c19b580f3efcb3a","indexName":"prod_NAME","hits":{"per_page":8}},"fireworks":{"colors":["0,250,154","255,69,0","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://blog-api-joaquinchou.vercel.app","comment":false,"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><meta name="description" content="论文1：Do We Really Need to Access the Source Data? Source Hypothesis Transfer for Unsupervised Domain Adaptation文章题目是《我们真的需要访问源数据吗？ 无监督域适应的源假设迁移》，发表在ICML2020，目前citation 382。 code:https:&#x2F;&#x2F;github.com&#x2F;tim-">
+<meta property="og:type" content="article">
+<meta property="og:title" content="无源域适应">
+<meta property="og:url" content="https://www.joaquinchou.com/academic_research/domain_adaption/SFDA_0/index.html">
+<meta property="og:site_name" content="喵语小站">
+<meta property="og:description" content="论文1：Do We Really Need to Access the Source Data? Source Hypothesis Transfer for Unsupervised Domain Adaptation文章题目是《我们真的需要访问源数据吗？ 无监督域适应的源假设迁移》，发表在ICML2020，目前citation 382。 code:https:&#x2F;&#x2F;github.com&#x2F;tim-">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxsDYD.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxWJNq.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxfiGV.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxfQG6.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxf8MD.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxfNdA.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxfdit.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxIkk9.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxIm6K.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxo93t.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxoPjf.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxoAHg.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxoVEQ.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxoKg0.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxoJUJ.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxTSZF.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxT9IJ.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxTFR1.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxTJL8.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxTrQ0.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxTyLT.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/26/zxTceU.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zzPgv8.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zzPOrF.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zzPxa9.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zzPz5R.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zzi2J1.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zziRRx.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zzFUTH.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zzF5pq.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/12/27/zzkkAH.png">
+<meta property="og:image" content="https://s1.ax1x.com/2023/01/01/pSCgvkj.png">
+<meta property="article:published_time" content="2022-12-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-01-01T10:33:19.698Z">
+<meta property="article:author" content="Joaquin Chou">
+<meta property="article:tag" content="academic_research">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2022/12/26/zxsDYD.png"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><canvas id="trianglifyContainer"></canvas><script defer src="https://fastly.jsdelivr.net/npm/trianglify@4/dist/trianglify.bundle.js"></script><script>document.addEventListener("DOMContentLoaded", () => {
+  const pattern = trianglify({
+    width: 800,
+    height: 600,
+    cellSize: 75,
+    palette: ["Oranges", "RdBu", "Purples", "Blues"],
+  });
+  const canvasOpts = {
+    applyCssScaling: false
+  }
+  document.body.appendChild(pattern.toCanvas(trianglifyContainer, canvasOpts));
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Joaquin Chou"><img width="96" loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/JTpLkT.jpg" alt="Joaquin Chou"></a><div class="site-author-name"><a href="/about/">Joaquin Chou</a></div><a class="site-name" href="/about/site.html">喵语小站</a><sub class="site-subtitle">Hope that someone you love would also love you!</sub><div class="site-description">希望你喜欢的人她/他也爱你！</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">17</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">8</span></a></div><a class="site-state-item hty-icon-button" href="/404.html" title="还没想好呢"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/JoaquinChou" title="GitHub" target="_blank" style="color:#FF00FF"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/my/m/music/playlist?id=621567138" title="网易云音乐" target="_blank" style="color:#C20C0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/albums/" title="我的相册" style="color:#DA70D6"><span class="icon iconify" data-icon="ri:gallery-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%BA%E6%96%871%EF%BC%9ADo-We-Really-Need-to-Access-the-Source-Data-Source-Hypothesis-Transfer-for-Unsupervised-Domain-Adaptation"><span class="toc-number">1.</span> <span class="toc-text">论文1：Do We Really Need to Access the Source Data? Source Hypothesis Transfer for Unsupervised Domain Adaptation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Motivation"><span class="toc-number">1.1.</span> <span class="toc-text">Motivation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Contributions"><span class="toc-number">1.2.</span> <span class="toc-text">Contributions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%9A%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">做法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.4.</span> <span class="toc-text">步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="toc-number">1.5.</span> <span class="toc-text">损失函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">1.6.</span> <span class="toc-text">参考</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%BA%E6%96%872%EF%BC%9ADomain-Adaptation-without-Source-Data"><span class="toc-number">2.</span> <span class="toc-text">论文2：Domain Adaptation without Source Data</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Motivation-1"><span class="toc-number">2.1.</span> <span class="toc-text">Motivation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Contributions-1"><span class="toc-number">2.2.</span> <span class="toc-text">Contributions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%9A%E6%B3%95-1"><span class="toc-number">2.3.</span> <span class="toc-text">做法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">2.4.</span> <span class="toc-text">算法流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-1"><span class="toc-number">2.5.</span> <span class="toc-text">步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0-1"><span class="toc-number">2.6.</span> <span class="toc-text">损失函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%BA%E6%96%873%EF%BC%9ASource-Free-Domain-Adaptation-via-Distribution-Estimation"><span class="toc-number">3.</span> <span class="toc-text">论文3：Source-Free Domain Adaptation via Distribution Estimation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Motivation-2"><span class="toc-number">3.1.</span> <span class="toc-text">Motivation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Contributions-2"><span class="toc-number">3.2.</span> <span class="toc-text">Contributions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%9A%E6%B3%95-2"><span class="toc-number">3.3.</span> <span class="toc-text">做法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E5%9B%BE-1"><span class="toc-number">3.4.</span> <span class="toc-text">算法流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4-2"><span class="toc-number">3.5.</span> <span class="toc-text">步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83-1"><span class="toc-number">3.6.</span> <span class="toc-text">参考</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#9400D3;"><link itemprop="mainEntityOfPage" href="https://www.joaquinchou.com/academic_research/domain_adaption/SFDA_0/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Joaquin Chou"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="喵语小站"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">无源域适应</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-12-26 00:00:00" itemprop="dateCreated datePublished" datetime="2022-12-26T00:00:00+08:00">2022-12-26</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">2.3k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">8m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span id="busuanzi_value_page_pv"></span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%96%B5%E5%96%B5%E7%A7%91%E7%A0%94/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">喵喵科研</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/academic-research/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">academic_research</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><h1 id="论文1：Do-We-Really-Need-to-Access-the-Source-Data-Source-Hypothesis-Transfer-for-Unsupervised-Domain-Adaptation"><a href="#论文1：Do-We-Really-Need-to-Access-the-Source-Data-Source-Hypothesis-Transfer-for-Unsupervised-Domain-Adaptation" class="headerlink" title="论文1：Do We Really Need to Access the Source Data? Source Hypothesis Transfer for Unsupervised Domain Adaptation"></a>论文1：Do We Really Need to Access the Source Data? Source Hypothesis Transfer for Unsupervised Domain Adaptation</h1><p>文章题目是《我们真的需要访问源数据吗？ 无监督域适应的源假设迁移》，发表在ICML2020，目前citation 382。</p>
+<p>code:<a target="_blank" rel="noopener" href="https://github.com/tim-learn/SHOT">https://github.com/tim-learn/SHOT</a></p>
+<span id="more"></span>
+
+<h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><ul>
+<li>之前的无监督域适应的方法需要接入源域的数据进行适应，在分布式或者<font color='red'>数据不共享场景</font>会造成私有数据的泄露。</li>
+</ul>
+<h2 id="Contributions"><a href="#Contributions" class="headerlink" title="Contributions"></a>Contributions</h2><ul>
+<li>论文的假设是有标签的源域数据经过训练好的特征提取器，输出的特征和分类器的结果应该和无标签的目标域数据输出的特征是对齐的，分类器的结果是相似的；</li>
+<li>为了实现特征对齐，从信息论的视角，文章利用<font color='red'>自熵最小化和网络输出类别比较平均两个方面进行约束，来使得信息最大化</font>；</li>
+<li>为了防止分类器输出噪声结果的影响，文中还在特征层面，对目标域的特征输出通过<font color='red'>原型聚类生成伪标签</font>，来约束目标域的训练。</li>
+</ul>
+<h2 id="做法"><a href="#做法" class="headerlink" title="做法"></a>做法</h2><img src="https://s1.ax1x.com/2022/12/26/zxsDYD.png" alt="zxsDYD.png" border="0" / loading="lazy">
+
+
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ul>
+<li><p>在有标签的源域数据上，训练一个特征表示器和分类器；</p>
+</li>
+<li><p>在无标签的目标域数据上，冻结分类器，用entropy loss和diversity loss约束目标域的特征调整backone参数；</p>
+</li>
+</ul>
+<ul>
+<li>更新伪标签。<br><br>利用softmax<font color='red'>对特征进行加权平均，再更新每一类的原型质心</font>。根据调整后的原型得到的特征，再经过分类器计算伪标签。</li>
+</ul>
+<h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>训练源域的损失函数，使用带有label smoothing的交叉熵；<br><img src="https://s1.ax1x.com/2022/12/26/zxWJNq.png" alt="zxWJNq.png" border="0" / loading="lazy"></p>
+<p>训练目标域的损失函数如下：</p>
+<ul>
+<li>使用分类器输出的K维向量进行自熵约束和互信息约束和伪标签交叉熵的约束。<br><br>自熵最小化可以使得输出的预测类别更加确定，每个类别中的所有样本特征的均值最小化可以保证每个类别在特征空间中比较均匀。</li>
+</ul>
+<img src="https://s1.ax1x.com/2022/12/26/zxfiGV.png" alt="zxfiGV.png" border="0" / loading="lazy">
+
+
+<img src="https://s1.ax1x.com/2022/12/26/zxfQG6.png" alt="zxfQG6.png" border="0" / loading="lazy">
+
+
+<ul>
+<li>伪标签$\hat{y}_t$尖使用原型聚类来确定。</li>
+</ul>
+<img src="https://s1.ax1x.com/2022/12/26/zxf8MD.png" alt="zxf8MD.png" border="0" / loading="lazy">
+
+<p>总的损失函数为</p>
+<img src="https://s1.ax1x.com/2022/12/26/zxfNdA.png" alt="zxfNdA.png" border="0" / loading="lazy">
+
+<img src="https://s1.ax1x.com/2022/12/26/zxfdit.png" alt="zxfdit.png" border="0" / loading="lazy">
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39456088/article/details/117002227">https://blog.csdn.net/qq_39456088/article/details/117002227</a></p>
+<h1 id="论文2：Domain-Adaptation-without-Source-Data"><a href="#论文2：Domain-Adaptation-without-Source-Data" class="headerlink" title="论文2：Domain Adaptation without Source Data"></a>论文2：Domain Adaptation without Source Data</h1><p>文章题目是《没有源域数据的域适应》，发表在TAI（IEEE Transactions on Artificial Intelligence）2021，目前citation 62。和论文1是同期工作，对于无源域适应(Source data-Free Domain Adaptation, SFDA)，论文故事讲的好。</p>
+<p>code:<a target="_blank" rel="noopener" href="https://github.com/youngryan1993/SFDA-SourceFreeDA">https://github.com/youngryan1993/SFDA-SourceFreeDA</a></p>
+<h2 id="Motivation-1"><a href="#Motivation-1" class="headerlink" title="Motivation"></a>Motivation</h2><ul>
+<li>不同域之间会存在数据不共享或者信息敏感的问题，目标域只能获得预训练的源域模型，<font color='red'>无法获得其数据</font>。</li>
+<li>论文观测到，在无标签的目标域上，不是所有数据都适合用于进行源域适应，只有在预训练的源域模型得到的<font color='red'>自熵值较低</font>的样本才是<font color='red'>可靠的</font>（熵值越小，不确定性越低），可用于目标域的训练。</li>
+</ul>
+<h2 id="Contributions-1"><a href="#Contributions-1" class="headerlink" title="Contributions"></a>Contributions</h2><ul>
+<li>为了减少<font color='red'>源域适应时伪标签的不确定性</font>，文章从<font color='red'>度量学习</font>的视角出发，提出基于豪斯多夫距离的过滤来筛选出自信样本，并且该距离是自适应的。</li>
+<li>训练目标域模型时，文章通过预训练的源域模型和根据距离过滤得到置信度较高的伪标签进行<font color='red'>双重约束</font>。</li>
+</ul>
+<h2 id="做法-1"><a href="#做法-1" class="headerlink" title="做法"></a>做法</h2><img src="https://s1.ax1x.com/2022/12/26/zxIkk9.png" alt="zxIkk9.png" border="0" / loading="lazy">
+
+<h2 id="算法流程图"><a href="#算法流程图" class="headerlink" title="算法流程图"></a>算法流程图</h2><img src="https://s1.ax1x.com/2022/12/26/zxIm6K.png" alt="zxIm6K.png" border="0" / loading="lazy">
+
+
+<h2 id="步骤-1"><a href="#步骤-1" class="headerlink" title="步骤"></a>步骤</h2><p>利用预训练的源域模型的主干网络$F_s$和分类器$C_s$去初始化目标域模型的主干网络$F_t$和两个分类器$C_t$、$C_{s2t}$。文中通过预训练模型的分类结果作为伪标签去约束目标域模型。此外，文中还通过不断更新自适应的原型记忆和每个目标域样本特征子集到原型子集的<a target="_blank" rel="noopener" href="https://blog.51cto.com/u_15278213/5340925">豪斯多夫距离</a>进行度量。</p>
+<ul>
+<li><p><b>自适应的原型记忆(Adaptive prototype memory, APM)</b></p>
+<p>选择目标域数据中每一类别，归一化自熵最小的样本作为一个集合，选择集合中最大的熵值作为定义多个原型$M_c$的阈值。由于计算一次原型开销比较大，文中设置100个steps周期计算更新APM。</p>
+<img src="https://s1.ax1x.com/2022/12/26/zxo93t.png" alt="zxo93t.png" border="0" / loading="lazy">
+
+<img src="https://s1.ax1x.com/2022/12/26/zxoPjf.png" alt="zxoPjf.png" border="0" / loading="lazy">
+
+<img src="https://s1.ax1x.com/2022/12/26/zxoAHg.png" alt="zxoAHg.png" border="0" / loading="lazy">
+
+<img src="https://s1.ax1x.com/2022/12/26/zxoVEQ.png" alt="zxoVEQ.png" border="0" / loading="lazy">
+</li>
+<li><p><b>置信度的过滤出目标域的可靠样本（Confidence-base filtering, CD filtering）</b></p>
+<ul>
+<li><p>原型embedding和目标域样本特征之间的相似度为<br><img src="https://s1.ax1x.com/2022/12/26/zxoKg0.png" alt="zxoKg0.png" border="0" / loading="lazy"></a></p>
+<p>通过极大似然估计找到当前目标域样本最相似的类别。</p>
+<img src="https://s1.ax1x.com/2022/12/26/zxoJUJ.png" alt="zxoJUJ.png" border="0" / loading="lazy"></li>
+<li><p>目标域样本特征子集$Q$和原型特征子集$p$之间使用豪斯多夫距离度量，并使用<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_25018077/article/details/127097074">上确界和下确界</a>优化为最大最小值问题，进而<font color='red'>度量出原型$M_c$中最相似的类$M_{t1}$和第二相似的类$M_{t2}$</font>。</p>
+<img src="https://s1.ax1x.com/2022/12/26/zxTSZF.png" alt="zxTSZF.png" border="0" / loading="lazy">
+
+<img src="https://s1.ax1x.com/2022/12/26/zxT9IJ.png" alt="zxT9IJ.png" border="0" / loading="lazy">
+
+<img src="https://s1.ax1x.com/2022/12/26/zxTFR1.png" alt="zxTFR1.png" border="0" / loading="lazy">
+
+<p>基于上述距离的定义，可以指定样本选择策略为</p>
+<img src="https://s1.ax1x.com/2022/12/26/zxTJL8.png" alt="zxTJL8.png" border="0" / loading="lazy">
+
+
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="损失函数-1"><a href="#损失函数-1" class="headerlink" title="损失函数"></a>损失函数</h2><p>预训练的源域模型进行伪标签的约束为</p>
+<img src="https://s1.ax1x.com/2022/12/26/zxTrQ0.png" alt="zxTrQ0.png" border="0" / loading="lazy">
+
+<p>通过APM中的原型特征空间度量出置信样本的损失为</p>
+<img src="https://s1.ax1x.com/2022/12/26/zxTyLT.png" alt="zxTyLT.png" border="0" / loading="lazy">
+
+<p>总的损失函数为</p>
+<p><img src="https://s1.ax1x.com/2022/12/26/zxTceU.png" alt="zxTceU.png" border="0" / loading="lazy"></a></p>
+<h1 id="论文3：Source-Free-Domain-Adaptation-via-Distribution-Estimation"><a href="#论文3：Source-Free-Domain-Adaptation-via-Distribution-Estimation" class="headerlink" title="论文3：Source-Free Domain Adaptation via Distribution Estimation"></a>论文3：Source-Free Domain Adaptation via Distribution Estimation</h1><p>文章题目是《通过分布估计进行无源域数据的域适应》，发表在CVPR 2022，目前citation 4。</p>
+<p>code:无。</p>
+<p>传统的域适应的方法是假设源域和目标域的数据都是可获得的。无源域适应（Source-Free Domain Adaption, SFDA）指在数据不共享的场合，可以通过源域的预训练模型和目标域的数据进行跨域知识迁移。</p>
+<h2 id="Motivation-2"><a href="#Motivation-2" class="headerlink" title="Motivation"></a>Motivation</h2><ul>
+<li>目前的SFDA的方法<font color='grey'>（SHOT:通过最大化互信息和最小化熵来隐式对齐两个域；G-SFDA:通过生成更多目标域的数据来学习目标域的分布；A2Net:通过引入新的分类器利用对抗学习来对齐两个域；SoFA:利用变分自编码器来建模目标域数据的分布。）</font>没有对齐源域和目标域的特征分布来进行域适应。</li>
+<li>许多SFDA的做法是冻结源域的分类器，根据目标域的数据对齐分类器输出的伪标签。本文也是在此基础上，旨在探究更鲁棒的伪标签生成策略和两个域之间的特征对齐方法。</li>
+</ul>
+<h2 id="Contributions-2"><a href="#Contributions-2" class="headerlink" title="Contributions"></a>Contributions</h2><ul>
+<li>对于通过源域预训练模型得到的目标域的特征，使用更鲁棒的伪标签策略（Spherical K-Means聚类）；</li>
+<li>提出源域分布估计（Source Distribution  Estimation ， SDE）来逼近源域分布，<font color='red'>假设源域和目标域的特征的语义信息是一致的</font>，再从逼近的代理分布中采样出代理特征，来使得目标域进行和估计的源域分布进行对齐，从而适应源域模型的分类器。<font color='red'>用代理源域分布取代源域分布，把无源的问题转化为有源</font>。</li>
+</ul>
+<h2 id="做法-2"><a href="#做法-2" class="headerlink" title="做法"></a>做法</h2><img src="https://s1.ax1x.com/2022/12/27/zzPgv8.png" alt="zzPgv8.png" border="0" / loading="lazy">
+
+<h2 id="算法流程图-1"><a href="#算法流程图-1" class="headerlink" title="算法流程图"></a>算法流程图</h2><img src="https://s1.ax1x.com/2022/12/27/zzPOrF.png" alt="zzPOrF.png" border="0" / loading="lazy">
+
+
+<h2 id="步骤-2"><a href="#步骤-2" class="headerlink" title="步骤"></a>步骤</h2><ul>
+<li><b>根据source anchors和spherical k-means clustering来获得鲁棒的伪标签</b><ul>
+<li>目标域的数据经过预训练的源域模型后，对特征进行球形K-Means聚类（超球面利用余弦距离聚类），聚类中心作为source anchors，设置阈值$\tau$进行进行聚类迭代。<img src="https://s1.ax1x.com/2022/12/27/zzPxa9.png" alt="zzPxa9.png" border="0" / loading="lazy">
+<img src="https://s1.ax1x.com/2022/12/27/zzPz5R.png" alt="zzPz5R.png" border="0" / loading="lazy">
+
+
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><B>源域分布估计</b></p>
+<ul>
+<li><p>假设源域的特征服从“类条件多元高斯分布”，$f^s_{i,k}∼N^s_k(μ^s_k,Σ^s_k)$。利用一个代理分布$N^{sur}_k(\hat{μ}^s_k,\hat{Σ}^s_k)$去逼近未知的源域特征分布；</p>
+</li>
+<li><p><b>估计代理分布的均值</b>。使用锚点和目标域的特征均值 $f^t_k$和锚点来估计$\hat{μ}^s_k$；</p>
+<img src="https://s1.ax1x.com/2022/12/27/zzi2J1.png" alt="zzi2J1.png" border="0" / loading="lazy">
+<img src="https://s1.ax1x.com/2022/12/27/zziRRx.png" alt="zziRRx.png" border="0" / loading="lazy">
+</li>
+<li><p><b>估计代理分布的方差</b>。<font color='red'>假设源域和目标域的特征的语义信息是一致的</font>，可以利用目标域的统计特性配上采样范围$\gamma$进行估计源域的方差。</p>
+<img src="https://s1.ax1x.com/2022/12/27/zzFUTH.png" alt="zzFUTH.png" border="0" / loading="lazy">
+
+<p>得到代理分布算是模拟源域特征的分布。</p>
+<img src="https://s1.ax1x.com/2022/12/27/zzF5pq.png" alt="zzF5pq.png" border="0" / loading="lazy">
+
+
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><b>无源域适应</b></p>
+<ul>
+<li><p>从代理分布中采样出源域数据的特征，把无源域适应问题转化为传统的DA问题。</p>
+</li>
+<li><p>使用<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/265417875?sort=created">MMD</a><font color='grey'>(Maximum Mean Discrepancy, <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/163839117">MMD</a>，度量两个分布在再生希尔伯特空间的距离。MMD的基本思想就是，如果两个随机变量的任意阶都相同的话，那么两个分布就是一致的。而当两个分布不相同的话，那么使得两个分布之间差距最大的那个矩应该被用来作为度量两个分布的标准。)</font>作为约束拉近代理源域的特征分布和目标域的特征分布的距离。$k_1$和$k_2$属于总类别中子类别的任意两个类，$f^{sur}$表示代理分布的特征。$n_b$为随机从代理源域分布中采样出$n_b$个特征。</p>
+<img src="https://s1.ax1x.com/2022/12/27/zzkkAH.png" alt="zzkkAH.png" border="0" / loading="lazy">
+</li>
+<li><p>通过对比域差异（Contrastive Domain Discrepancy, CDD)方法来<font color='red'>显式对齐</font>目标域特征的分布和估计源域的分布，即最小化类内域差异，最大化类间域差异。</p>
+<img src="https://s1.ax1x.com/2023/01/01/pSCgvkj.png" alt="pSCgvkj.png" border="0" / loading="lazy">
+
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="参考-1"><a href="#参考-1" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/singxsy/article/details/124988441">DA-5-Source-Free Domain Adaptation via Distribution Estimation_无CCFA就不改名的博客-CSDN博客</a></p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">来都来了，不点一下麽？(●ˇ∀ˇ●)</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png" alt="QQ 支付" title="QQ 支付"></a><div><span style="color:#12B7F5"><span class="icon iconify" data-icon="ri:qq-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Joaquin Chou</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://www.joaquinchou.com/academic_research/domain_adaption/SFDA_0/" title="无源域适应">https://www.joaquinchou.com/academic_research/domain_adaption/SFDA_0/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：Joaquin Chou\n本文链接：https://www.joaquinchou.com/academic_research/domain_adaption/SFDA_0/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/personal_learning/leetcode/leetcode_JianZhi/" rel="next" title="Leetcode_and_JianZhi日常复习"><span class="post-nav-text">Leetcode_and_JianZhi日常复习</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>可以点击下方进行评论哟！</span><br></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/academic_research/domain_adaption/SFDA_0/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2023 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> Joaquin Chou</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v6.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-11-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div id="busuanzi"><span id="busuanzi_container_site_uv" title="总访客量"><span><span class="icon iconify" data-icon="ri:user-line"></span></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><span class="icon iconify" data-icon="ri:eye-line"></span></span><span id="busuanzi_value_site_pv"></span></span><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#9400D3" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script defer src="https://fastly.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script><script defer src="https://fastly.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script><script defer src="/js/search/algolia-search.js" type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"></div><div class="algolia-results"><div id="algolia-stats"></div><div id="algolia-hits"></div><div class="algolia-pagination" id="algolia-pagination"></div></div></div><script>function initMourn() {
+  const date = new Date();
+  const today = (date.getMonth() + 1) + "-" + date.getDate()
+  const mourn_days = ["4-4","9-18","3-3"]
+  if (mourn_days.includes(today)) {
+    document.documentElement.style.filter = "grayscale(1)";
+  }
+}
+initMourn();</script></body></html>

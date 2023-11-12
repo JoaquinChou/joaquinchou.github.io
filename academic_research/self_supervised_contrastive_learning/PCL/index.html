@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#9400D3"><meta name="author" content="Joaquin Chou"><meta name="copyright" content="Joaquin Chou"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>原型对比学习（PCL） | 喵语小站</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{},
+    ...true?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#9400D3"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"www.joaquinchou.com","root":"/","title":"喵星暖暖窝","version":"1.10.11","mode":"time","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"algolia":{"appID":"L0D85KPS1S","apiKey":"715edff2e91248577c19b580f3efcb3a","indexName":"prod_NAME","hits":{"per_page":8}},"fireworks":{"colors":["0,250,154","255,69,0","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://blog-api-joaquinchou.vercel.app","comment":false,"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><meta name="description" content="论文题目：Prototypical Contrastive Learning of Unsupervised Representationscode: https:&#x2F;&#x2F;github.com&#x2F;salesforce&#x2F;PCL Motivation如今自监督对比学习的经典做法离不开数据增扩和对比损失，针对于对比损失而言，在batch里面划分正负样本的做法会忽视数据的语义结构表示，许多具有相似语义结构的负样">
+<meta property="og:type" content="article">
+<meta property="og:title" content="原型对比学习（PCL）">
+<meta property="og:url" content="https://www.joaquinchou.com/academic_research/self_supervised_contrastive_learning/PCL/index.html">
+<meta property="og:site_name" content="喵语小站">
+<meta property="og:description" content="论文题目：Prototypical Contrastive Learning of Unsupervised Representationscode: https:&#x2F;&#x2F;github.com&#x2F;salesforce&#x2F;PCL Motivation如今自监督对比学习的经典做法离不开数据增扩和对比损失，针对于对比损失而言，在batch里面划分正负样本的做法会忽视数据的语义结构表示，许多具有相似语义结构的负样">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7SYVI.md.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7S3KH.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7Slxe.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7S0xg.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7SQ2D.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7S8rd.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7Stat.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7SNIP.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7SaPf.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7SwRS.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7SdG8.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7Srrj.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/03/12/b7Ssqs.png">
+<meta property="article:published_time" content="2022-03-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-12T09:20:48.200Z">
+<meta property="article:author" content="Joaquin Chou">
+<meta property="article:tag" content="self_supervised_contrastive_learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2022/03/12/b7SYVI.md.png"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><canvas id="trianglifyContainer"></canvas><script defer src="https://fastly.jsdelivr.net/npm/trianglify@4/dist/trianglify.bundle.js"></script><script>document.addEventListener("DOMContentLoaded", () => {
+  const pattern = trianglify({
+    width: 800,
+    height: 600,
+    cellSize: 75,
+    palette: ["Oranges", "RdBu", "Purples", "Blues"],
+  });
+  const canvasOpts = {
+    applyCssScaling: false
+  }
+  document.body.appendChild(pattern.toCanvas(trianglifyContainer, canvasOpts));
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Joaquin Chou"><img width="96" loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/JTpLkT.jpg" alt="Joaquin Chou"></a><div class="site-author-name"><a href="/about/">Joaquin Chou</a></div><a class="site-name" href="/about/site.html">喵语小站</a><sub class="site-subtitle">Hope that someone you love would also love you!</sub><div class="site-description">希望你喜欢的人她/他也爱你！</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">17</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">8</span></a></div><a class="site-state-item hty-icon-button" href="/404.html" title="还没想好呢"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/JoaquinChou" title="GitHub" target="_blank" style="color:#FF00FF"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/my/m/music/playlist?id=621567138" title="网易云音乐" target="_blank" style="color:#C20C0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/albums/" title="我的相册" style="color:#DA70D6"><span class="icon iconify" data-icon="ri:gallery-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Motivation"><span class="toc-number">1.</span> <span class="toc-text">Motivation</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Contribution"><span class="toc-number">2.</span> <span class="toc-text">Contribution</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%81%9A%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">做法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1"><span class="toc-number">3.1.</span> <span class="toc-text">极大似然估计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EM%E7%AE%97%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">EM算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E5%85%B7%E4%BD%93%E6%B1%82%E8%A7%A3"><span class="toc-number">3.3.</span> <span class="toc-text">网络参数具体求解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#E-step"><span class="toc-number">3.3.1.</span> <span class="toc-text">E step</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#M-step"><span class="toc-number">3.3.2.</span> <span class="toc-text">M step</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%93%E5%BA%A6%E7%B3%BB%E6%95%B0%E4%BC%B0%E8%AE%A1"><span class="toc-number">3.3.3.</span> <span class="toc-text">浓度系数估计</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">4.</span> <span class="toc-text">实验结果</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TSNE%E5%9B%BE"><span class="toc-number">4.1.</span> <span class="toc-text">TSNE图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B2%97%E7%BB%86%E7%B2%92%E5%BA%A6%E5%88%86%E7%B1%BB%E5%B1%95%E7%A4%BA"><span class="toc-number">4.2.</span> <span class="toc-text">粗细粒度分类展示</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#9400D3;"><link itemprop="mainEntityOfPage" href="https://www.joaquinchou.com/academic_research/self_supervised_contrastive_learning/PCL/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Joaquin Chou"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="喵语小站"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">原型对比学习（PCL）</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-03-12 00:00:00" itemprop="dateCreated datePublished" datetime="2022-03-12T00:00:00+08:00">2022-03-12</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">1.2k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">4m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span id="busuanzi_value_page_pv"></span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%96%B5%E5%96%B5%E7%A7%91%E7%A0%94/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">喵喵科研</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/self-supervised-contrastive-learning/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">self_supervised_contrastive_learning</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><p>论文题目：Prototypical Contrastive Learning of Unsupervised Representations<br><br>code: <a target="_blank" rel="noopener" href="https://github.com/salesforce/PCL">https://github.com/salesforce/PCL</a></p>
+<h1 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h1><p>如今自监督对比学习的经典做法离不开数据增扩和对比损失，针对于对比损失而言，在batch里面划分正负样本的做法会忽视数据的语义结构表示，许多具有相似语义结构的负样本实例在特征空间其实不希望被拉开距离，但是对比损失会放大他们之间的差距。</p>
+<span id="more"></span>
+
+<h1 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h1><p>1、在自监督对比学习的特征空间引入聚类，聚类希望语义相似的负样本实例约束在同一个原型群组中，不会因为对比损失而拉大差距；<br><br>2、提出原型的概念，一个原型是指相似语义结构的特征表示聚在一个群组（图中的圆）中的embedding；即使是负样本，语义结构相似的应该属于同一群组（同一个圆内）。<br><br>3、为了估计每个原型群组中的特征分布，文章把泛化InfoNCE loss为ProtoNCE loss；<br><br>4、将整个数据集的图像分配给不同粒度的多个原型群组。<br></p>
+<p>图中绿框表示粗粒度的原型群组，原型是绿点，只要是有马都归在这个原型群组中，人马也属于该原型群组中的一个细粒度的原型群组(图中左边的蓝框)。</p>
+<p>图中两个蓝框表示在细粒度的原型群组中，负样本会给约束在原型空间中，而不是单纯被InfoNCE loss拉远。</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7SYVI.md.png"/ loading="lazy">
+
+<h1 id="做法"><a href="#做法" class="headerlink" title="做法"></a>做法</h1><h2 id="极大似然估计"><a href="#极大似然估计" class="headerlink" title="极大似然估计"></a>极大似然估计</h2><p>多数情况下我们是根据输入样本和模型参数来推算结果，而极大似然估计是已知输入样本及其服从的分布，然后寻求使该结果出现的可能性最大的条件，以此来估计参数。附上<a target="_blank" rel="noopener" href="https://www.cnblogs.com/coshaho/p/9573367.html">极大似然估计讲解</a>。</p>
+<h2 id="EM算法"><a href="#EM算法" class="headerlink" title="EM算法"></a>EM算法</h2><p>EM算法主要解决在极大似然估计中，输入数据的概率分布未知的问题，通过引入隐变量$𝒛$的分布，方便对参数$\theta$进行极大似然估计。<br>附上<a target="_blank" rel="noopener" href="https://blog.csdn.net/v_july_v/article/details/81708386">EM算法讲解</a>。</p>
+<ul>
+<li>E Step：隐变量的条件概率分布的期望的求解——根据当前的模型参数$\theta^{(i)}$和观测数据$X$求得隐变量的条件概率分布期望$Q(z^{(i)})$；</li>
+<li>M Step：参数的求解——根据$Q(z^{(i)})$求参数$\theta^{(i)}$的似然函数，通过取对数求导，令导数等于0得到模型参数$\theta^{(i+1)}$。<br>重复上述操作。直到$\theta$收敛。</li>
+</ul>
+<p>训练过程如下：<br>采用MoCo的架构，把原型的embedding当成隐变量$C=\{c_i\}_{i=1}^k$，通过E step可得到$Q(c_i) = p(c_i;x_i,\theta)$，通过M step求得网络参数$\theta^\star$，整个训练的损失函数为</p>
+<p>$$L_{ProtoNCE}=L_{infoNCE} + L_{Proto}$$</p>
+<h2 id="网络参数具体求解"><a href="#网络参数具体求解" class="headerlink" title="网络参数具体求解"></a>网络参数具体求解</h2><p>建议看完<a target="_blank" rel="noopener" href="https://www.cnblogs.com/coshaho/p/9573367.html">极大似然估计讲解</a>再往下看。<br>给定训练集$X={x_1,x_2,…,x_n}$，之前对比学习的做法是将$X$映射到$V={v_1,v_2,…,v_n}$，再使用如下对比损失进行优化求参数。<br><img src="https://s1.ax1x.com/2022/03/12/b7S3KH.png" / loading="lazy"></p>
+<p>在原型对比学习中，用原型$c$当成隐变量，代替特征$v^{\prime}$，温度系数被替换成为原型浓度估计$\phi$。<br>$n$张图像的极大似然估计为</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7Slxe.png"/ loading="lazy">
+
+<p>引入隐变量$C=\{c_i\}_{i=1}^k$，有</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7S0xg.png"/ loading="lazy">
+
+
+<p>假设$Q(c_i)$是原型$c$的分布，上式经过Jensen不等式和丢弃常数项的操作后可优化为<br></p>
+<img src="https://s1.ax1x.com/2022/03/12/b7SQ2D.png"/ loading="lazy">
+
+<h3 id="E-step"><a href="#E-step" class="headerlink" title="E step"></a>E step</h3><p>目的是得到$p(c_i,x_i;\theta)$的期望。Momentum encoder输出特征$v_i^{\prime}=f_{\theta^\prime}(x_i)$在$p(c_i,x_i;\theta)$的分布下使用K-means算法，可以得到$k$个聚类中心。$x_i\in c_i$输出1，否则0。</p>
+<h3 id="M-step"><a href="#M-step" class="headerlink" title="M step"></a>M step</h3><p>目的是求解参数$\theta$。<br>当且仅当$Q(c_i)=p(x_i,c_i;\theta)$时，(6)式有最大下界。可得下式。</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7S8rd.png"/ loading="lazy">
+
+<p>假设聚类的质心是均匀的，有下式。</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7Stat.png"/ loading="lazy">
+
+<p>为求解参数，再假设每个原型的分布是各项均匀的高斯分布，有</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7SNIP.png"/ loading="lazy">
+
+<p>可解得网络参数为</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7SaPf.png"/ loading="lazy">
+
+<p>上述是聚类算法的网络参数解法。联合对比学习损失函数可得下式。</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7SwRS.png"/ loading="lazy">
+
+<h3 id="浓度系数估计"><a href="#浓度系数估计" class="headerlink" title="浓度系数估计"></a>浓度系数估计</h3><p>系数$\phi$反映原型群组聚集的紧密程度，$\phi$越小表示群组越小，且聚合度高。用于衡量特征$v_z^\prime$和对应原型$c$之间的相似度。定义为</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7SdG8.png"/ loading="lazy">
+
+<p>momentum编码器的输出特征为$\{v_z^{\prime}\}_{z=1}^Z$。</p>
+<h1 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h1><h2 id="TSNE图"><a href="#TSNE图" class="headerlink" title="TSNE图"></a>TSNE图</h2><p>在ImageNet上训练前40类的TSNE图。</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7Srrj.png"/ loading="lazy">
+
+<h2 id="粗细粒度分类展示"><a href="#粗细粒度分类展示" class="headerlink" title="粗细粒度分类展示"></a>粗细粒度分类展示</h2><p>绿框和黄框表示聚类结果（粗粒度的原型），绿框属于聚类结果中更细粒度的原型。像在马的粗粒度原型中，人和马就是细粒度的原型。换句话说，在马的类别，含有人马之间的图像距离更近。</p>
+<img src="https://s1.ax1x.com/2022/03/12/b7Ssqs.png"/ loading="lazy">
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">来都来了，不点一下麽？(●ˇ∀ˇ●)</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png" alt="QQ 支付" title="QQ 支付"></a><div><span style="color:#12B7F5"><span class="icon iconify" data-icon="ri:qq-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Joaquin Chou</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://www.joaquinchou.com/academic_research/self_supervised_contrastive_learning/PCL/" title="原型对比学习（PCL）">https://www.joaquinchou.com/academic_research/self_supervised_contrastive_learning/PCL/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：Joaquin Chou\n本文链接：https://www.joaquinchou.com/academic_research/self_supervised_contrastive_learning/PCL/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/academic_research/self_supervised_contrastive_learning/HCSC/" rel="prev" title="层次对比选择编码(HCSC)"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">层次对比选择编码(HCSC)</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/academic_research/manifold_learning/manifold_learning_introduction/" rel="next" title="流形简介"><span class="post-nav-text">流形简介</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>可以点击下方进行评论哟！</span><br></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/academic_research/self_supervised_contrastive_learning/PCL/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2023 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> Joaquin Chou</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v6.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-11-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div id="busuanzi"><span id="busuanzi_container_site_uv" title="总访客量"><span><span class="icon iconify" data-icon="ri:user-line"></span></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><span class="icon iconify" data-icon="ri:eye-line"></span></span><span id="busuanzi_value_site_pv"></span></span><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#9400D3" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script defer src="https://fastly.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script><script defer src="https://fastly.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script><script defer src="/js/search/algolia-search.js" type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"></div><div class="algolia-results"><div id="algolia-stats"></div><div id="algolia-hits"></div><div class="algolia-pagination" id="algolia-pagination"></div></div></div><script>function initMourn() {
+  const date = new Date();
+  const today = (date.getMonth() + 1) + "-" + date.getDate()
+  const mourn_days = ["4-4","9-18","3-3"]
+  if (mourn_days.includes(today)) {
+    document.documentElement.style.filter = "grayscale(1)";
+  }
+}
+initMourn();</script></body></html>

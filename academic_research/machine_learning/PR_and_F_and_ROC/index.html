@@ -1,0 +1,235 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#9400D3"><meta name="author" content="Joaquin Chou"><meta name="copyright" content="Joaquin Chou"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>评价指标的那些事儿 | 喵语小站</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{},
+    ...true?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#9400D3"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"www.joaquinchou.com","root":"/","title":"喵星暖暖窝","version":"1.10.11","mode":"time","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"algolia":{"appID":"L0D85KPS1S","apiKey":"715edff2e91248577c19b580f3efcb3a","indexName":"prod_NAME","hits":{"per_page":8}},"fireworks":{"colors":["0,250,154","255,69,0","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://blog-api-joaquinchou.vercel.app","comment":false,"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><meta name="description" content="关于机器学习中的评价指标概念的问答。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="评价指标的那些事儿">
+<meta property="og:url" content="https://www.joaquinchou.com/academic_research/machine_learning/PR_and_F_and_ROC/index.html">
+<meta property="og:site_name" content="喵语小站">
+<meta property="og:description" content="关于机器学习中的评价指标概念的问答。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2022/04/13/LKDo3q.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/04/13/LKIh9K.png">
+<meta property="article:published_time" content="2022-04-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-16T12:22:51.064Z">
+<meta property="article:author" content="Joaquin Chou">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2022/04/13/LKDo3q.png"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><canvas id="trianglifyContainer"></canvas><script defer src="https://fastly.jsdelivr.net/npm/trianglify@4/dist/trianglify.bundle.js"></script><script>document.addEventListener("DOMContentLoaded", () => {
+  const pattern = trianglify({
+    width: 800,
+    height: 600,
+    cellSize: 75,
+    palette: ["Oranges", "RdBu", "Purples", "Blues"],
+  });
+  const canvasOpts = {
+    applyCssScaling: false
+  }
+  document.body.appendChild(pattern.toCanvas(trianglifyContainer, canvasOpts));
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Joaquin Chou"><img width="96" loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/JTpLkT.jpg" alt="Joaquin Chou"></a><div class="site-author-name"><a href="/about/">Joaquin Chou</a></div><a class="site-name" href="/about/site.html">喵语小站</a><sub class="site-subtitle">Hope that someone you love would also love you!</sub><div class="site-description">希望你喜欢的人她/他也爱你！</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">17</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">8</span></a></div><a class="site-state-item hty-icon-button" href="/404.html" title="还没想好呢"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/JoaquinChou" title="GitHub" target="_blank" style="color:#FF00FF"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/my/m/music/playlist?id=621567138" title="网易云音乐" target="_blank" style="color:#C20C0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/albums/" title="我的相册" style="color:#DA70D6"><span class="icon iconify" data-icon="ri:gallery-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87%E6%9C%89%EF%BC%9F-%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87"><span class="toc-number">1.</span> <span class="toc-text">分类模型常用的评价指标有？(分类模型的评价指标)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D%E4%B8%8B%E6%9F%A5%E5%87%86%E7%8E%87-%E6%9F%A5%E5%85%A8%E7%8E%87-F1%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">介绍下查准率&#x2F;查全率&#x2F;F1？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D%E4%B8%8BP-R%E6%9B%B2%E7%BA%BF%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">介绍下P-R曲线？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E5%AE%8F%E5%B9%B3%E5%9D%87%E5%92%8C%E5%BE%AE%E5%B9%B3%E5%9D%87%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">如何理解宏平均和微平均？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ROC%E6%9B%B2%E7%BA%BF%E6%9C%89%E4%BB%80%E4%B9%88%E4%BC%98%E7%82%B9%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">ROC曲线有什么优点？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AUC%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9FAUC%E6%98%AF%E5%90%A6%E5%AF%B9%E6%AD%A3%E8%B4%9F%E6%A0%B7%E6%9C%AC%E6%AF%94%E4%BE%8B%E6%95%8F%E6%84%9F%EF%BC%9F"><span class="toc-number">6.</span> <span class="toc-text">AUC是什么？AUC是否对正负样本比例敏感？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AUC%E7%9A%84%E6%84%8F%E4%B9%89%E4%BB%A5%E5%8F%8A%E4%B8%A4%E7%A7%8D%E8%AE%A1%E7%AE%97%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-number">7.</span> <span class="toc-text">AUC的意义以及两种计算方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AB-test%E7%9A%84%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="toc-number">8.</span> <span class="toc-text">AB test的原理？</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#9400D3;"><link itemprop="mainEntityOfPage" href="https://www.joaquinchou.com/academic_research/machine_learning/PR_and_F_and_ROC/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Joaquin Chou"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="喵语小站"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">评价指标的那些事儿</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-04-15 00:00:00" itemprop="dateCreated datePublished" datetime="2022-04-15T00:00:00+08:00">2022-04-15</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">1.8k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">6m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span id="busuanzi_value_page_pv"></span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%96%B5%E8%AF%AD%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">喵语笔记</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="--text-color:#3776ab"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">机器学习</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><p>关于机器学习中的<a target="_blank" rel="noopener" href="https://www.nowcoder.com/discuss/681294">评价指标概念</a>的问答。</p>
+<span id="more"></span>
+
+<h2 id="分类模型常用的评价指标有？-分类模型的评价指标"><a href="#分类模型常用的评价指标有？-分类模型的评价指标" class="headerlink" title="分类模型常用的评价指标有？(分类模型的评价指标)"></a>分类模型常用的评价指标有？(分类模型的评价指标)</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/258596465">评价指标</a>有</p>
+<ul>
+<li><p><b>混淆矩阵</b></p>
+<table>
+<thead>
+<tr>
+<th align="center">真实结果</th>
+<th align="center">预测为正例</th>
+<th align="center">预测为反例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">正例</td>
+<td align="center">TP（真正例）</td>
+<td align="center">FN（假反例）</td>
+</tr>
+<tr>
+<td align="center">反例</td>
+<td align="center">FP（假正例）</td>
+<td align="center">TN（真反例）</td>
+</tr>
+</tbody></table>
+<p>矩阵的非对角线元素为0得到完美分类器。</p>
+</li>
+<li><p><b>准确率(Accuracy)和错误率(Error Rate)</b></p>
+<ul>
+<li>ACC：所有样本中预测正确样本的比例；</li>
+<li>Error Rate：所有样本中预测错误样本的比例。<br>$$ACC=\frac{TP+TN}{TP+TN+FP+FN}$$<br>$$Error Rate=\frac{FP+FN}{TP+TN+FP+FN}=1-ACC$$<br>ACC和Error Rate缺点：测试类别极度不均衡时，无法反映算法的性能。</li>
+</ul>
+</li>
+<li><p><b>精确率(Precision)和召回率(Recall)</b></p>
+<ul>
+<li>精确率(precision)：预测为真时，正确的结果占<b>预测结果</b>的比例。<br></li>
+<li>召回率(recall)：预测为真时，正确的结果占<b>真实结果</b>的比例。<br></li>
+</ul>
+<p>$$P=\frac{TP}{TP+FP}$$<br>$TP+FN$表示该类真实的样本数，查全率为<br>$$R=\frac{TP}{TP+FN}$$</p>
+</li>
+<li><p><b>F1-score</b><br>当P和R出现矛盾，需要综合考虑时，可以使用<i>F-Measure(F-Score)</i>，它是P和R<font color='red'>调和平均</font>的结果，公式如下。<br>$$\frac{1}{F_\beta}=\frac{1}{\beta^2}(\frac{1}{P}+\frac{\beta^2}{R})$$<br><font color='red'>当$\beta=1$时，也就是常见的$F1$度量，当$F1$越高，模型的性能越好。</font>查准率和查全率的调和平均，比算术平均（求和除以2）和几何平均（平方再相乘开方）更重视较小值。</p>
+</li>
+<li><p><b>ROC曲线</b><br>受试者操作特征曲线(Receiver Operating Characteristic curve, ROC)是以”假正例率”(False Positive Rate，FPR)为横坐标，”真正例率”(True Positive Rate, TPR)为纵坐标的曲线，其中TPR只和正例样本数据有关，FPR只和负例样本数据有关。所以ROC曲线不受正负样本比例的影响。<br>$$TPR=\frac{TP}{TP+FN}$$<br>$$FPR=\frac{FP}{FP+TN}$$<br>且FPR低的同时能有高的TPR(曲线越靠近左上角且越陡峭，模型越理想)。</p>
+</li>
+<li><p><b>AUC(一般指ROC下的面积，也有PR_AUC)</b><br> 曲线下的面积越大，模型性能越理想。</p>
+</li>
+<li><p><b>KS曲线</b><br>FPR表示模型对于负样本误判的程度，而TPR表示模型对正样本召回的程度。KS曲线是TPR曲线和FPR曲线的最大间隔距离。<br>$$KS=max(TPR-FPR)\in[0,1]$$</p>
+</li>
+<li><p><b>P-R曲线</b></p>
+</li>
+<li><p><b>宏平均和微平均</b></p>
+</li>
+</ul>
+<h2 id="介绍下查准率-查全率-F1？"><a href="#介绍下查准率-查全率-F1？" class="headerlink" title="介绍下查准率/查全率/F1？"></a>介绍下查准率/查全率/F1？</h2><p>二分类问题在正反例类别不均衡时，acc作为评价指标则失去意义。此时可以考虑查准率和查全率。<br><br>查准率(precision)：预测为真时，正确的结果占<b>预测结果</b>的比例。<br><br>查全率(recall)：预测为真时，正确的结果占<b>真实结果</b>的比例。<br><br>举例：70张猫和30张狗的图像，经过某个分类器判断，得到50张猫和50张狗的输出。预测的50张狗的图像假设有30张是狗。此时总的准确率为$(50+30)/100=80%$，狗的精确率为$30/50=0.6$，召回率为$30/30=1$</p>
+<p>用混淆矩阵表示如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">真实结果</th>
+<th align="center">预测为正例</th>
+<th align="center">预测为反例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">正例</td>
+<td align="center">TP（真正例）</td>
+<td align="center">FN（假反例）</td>
+</tr>
+<tr>
+<td align="center">反例</td>
+<td align="center">FP（假正例）</td>
+<td align="center">TN（真反例）</td>
+</tr>
+</tbody></table>
+<p>准确率定义为<br>$$ACC=\frac{TP+TN}{TP+TN+FP+FN}$$<br>查准率为<br>$$P=\frac{TP}{TP+FP}$$<br>$TP+FN$表示该类真实的样本数，查全率为<br>$$R=\frac{TP}{TP+FN}$$</p>
+<p><b>当P和R出现矛盾，需要综合考虑时，可以使用<i>F-Measure(F-Score)</i>，它是P和R<font color='red'>调和平均</font>的结果</b>，公式如下。<br>$$\frac{1}{F_\beta}=\frac{1}{\beta^2}(\frac{1}{P}+\frac{\beta^2}{R})$$<br><font color='red'>当$\beta=1$时，也就是常见的$F1$度量，当$F1$越高，模型的性能越好。</font>查准率和查全率的调和平均，比算术平均（求和除以2）和几何平均（平方再相乘开方）更重视较小值。</p>
+<h2 id="介绍下P-R曲线？"><a href="#介绍下P-R曲线？" class="headerlink" title="介绍下P-R曲线？"></a>介绍下P-R曲线？<br></h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/404798546">P-R曲线</a>描述的是查准率-查全率变化的曲线。</p>
+<p>假设模型只输出正例的预测概率，对测试样本的预测结果进行降序排列，按降序的结果把每个预测概率作为区分正反例的阈值，以查全率为横坐标。查准率为纵坐标，从最小阈值和<code>recall=1</code>开始，从右往左绘制曲线，可得下图。<br><img src="https://s1.ax1x.com/2022/04/13/LKDo3q.png"/ loading="lazy"></p>
+<p>P-R曲线对模型性能的评估，一般可以通过<b>P-R曲线下的面积</b>大小(Area Under Curve, AUC)来估算，如果曲线有交叠，也可以通过<b>“平衡点”</b>(Break-Event Point, BEP)来估算。即当P=R时，平衡点的取值越高，模型性能越好。</p>
+<h2 id="如何理解宏平均和微平均？"><a href="#如何理解宏平均和微平均？" class="headerlink" title="如何理解宏平均和微平均？"></a>如何理解宏平均和微平均？<br></h2><ul>
+<li>宏平均(macro average)：将每个类别的P、R、F单独计算，然后所有类别的指标直接取平均。</li>
+<li>微平均(micro average)：把所有类别都考虑进来，统计计算P、R、F。<br>如二分类中，<br>$$micro-P=\frac{TP1+TP2}{TP1+FP1+TP2+FP2}$$</li>
+</ul>
+<p>在多分类的类别不均衡问题中，使用微平均的更关注少数类别。宏平均和微平均公式如下。</p>
+<img src="https://s1.ax1x.com/2022/04/13/LKIh9K.png" / loading="lazy">
+
+
+
+<h2 id="ROC曲线有什么优点？"><a href="#ROC曲线有什么优点？" class="headerlink" title="ROC曲线有什么优点？"></a>ROC曲线有什么优点？<br></h2><p>PR曲线和ROC(Receiver Operating Characteristics)曲线对不平衡数据的<a target="_blank" rel="noopener" href="https://blog.csdn.net/j05073094/article/details/119985348?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0.pc_relevant_default&spm=1001.2101.3001.4242.1&utm_relevant_index=3">表现不同</a>。接受者操作特征曲线是根据混淆矩阵得到的。</p>
+<ul>
+<li>PR曲线对数据不平衡是敏感的，正反例的比例变化会使得PR曲线发生很大变化；因为P和R的计算依赖于不同类别。</li>
+<li>ROC曲线是以”假正例率”(False Positive Rate，FPR)为横坐标，”真正例率”(True Positive Rate, TPR)为纵坐标的，FPR和TPR的计算只依赖于统一类别数据内部。故ROC曲线对数据不平衡并不敏感。</li>
+</ul>
+<h2 id="AUC是什么？AUC是否对正负样本比例敏感？"><a href="#AUC是什么？AUC是否对正负样本比例敏感？" class="headerlink" title="AUC是什么？AUC是否对正负样本比例敏感？"></a>AUC是什么？AUC是否对正负样本比例敏感？<br></h2><p>PR曲线也存在AUC，但是一般所说的<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/79698237">AUC</a>(Area Under Curve)是指ROC曲线下的面积，<font color='red'><b>ROC曲线的横坐标是FPR，FPR只关注负样本，与正样本无关，TPR只关注正样本，与负样本无关</b></font>，所以对横纵轴进行积分当然也不会对正负样本比例敏感。<br>$$AUC=\int_{t=\infty}^{\infty}y(t)dx(t)$$</p>
+<h2 id="AUC的意义以及两种计算方式？"><a href="#AUC的意义以及两种计算方式？" class="headerlink" title="AUC的意义以及两种计算方式？"></a>AUC的意义以及两种计算方式？<br></h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/54707294">意义</a>：正例预测为正的概率值大于反例预测为负的概率值的可能性。</li>
+<li>计算方法：<ul>
+<li>绘制ROC曲线，计算ROC曲线下的面积；</li>
+<li>计算样本中正例预测为正样本的概率值大于反例预测成负样本的概率值的个数，累加计数再除以总样本数。</li>
+</ul>
+</li>
+</ul>
+<h2 id="AB-test的原理？"><a href="#AB-test的原理？" class="headerlink" title="AB test的原理？"></a>AB test的原理？<br></h2><p>《百面机器学习》</p>
+<p>AB Test是为了验证新模型、新产品或者新算法是否有提升的测试方法。  </p>
+<ul>
+<li>离散评估无法完全消除模型过拟合的影响；</li>
+<li>离散评估无法还原线上的工程环境；</li>
+<li>线上系统的某些商业指标在离线评估中无法使用。<br>
+AB Test的主要方法是对用户进行分桶，分为对照组和实验组，分桶的过程中要保证桶内样本的独立性和采样方式的无偏性。对实验组的用户实施新模型，对对照组的用户实施旧模型。根据检验指标判断AB两个模型对象哪个方案效果更好。</li>
+</ul>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">来都来了，不点一下麽？(●ˇ∀ˇ●)</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png" alt="QQ 支付" title="QQ 支付"></a><div><span style="color:#12B7F5"><span class="icon iconify" data-icon="ri:qq-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Joaquin Chou</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://www.joaquinchou.com/academic_research/machine_learning/PR_and_F_and_ROC/" title="评价指标的那些事儿">https://www.joaquinchou.com/academic_research/machine_learning/PR_and_F_and_ROC/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：Joaquin Chou\n本文链接：https://www.joaquinchou.com/academic_research/machine_learning/PR_and_F_and_ROC/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/academic_research/machine_learning/Linear_and_Logistic_Regression/" rel="prev" title="线性回归和逻辑回归"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">线性回归和逻辑回归</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/academic_research/self_supervised_contrastive_learning/HCSC/" rel="next" title="层次对比选择编码(HCSC)"><span class="post-nav-text">层次对比选择编码(HCSC)</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>可以点击下方进行评论哟！</span><br></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/academic_research/machine_learning/PR_and_F_and_ROC/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2023 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> Joaquin Chou</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v6.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-11-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div id="busuanzi"><span id="busuanzi_container_site_uv" title="总访客量"><span><span class="icon iconify" data-icon="ri:user-line"></span></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><span class="icon iconify" data-icon="ri:eye-line"></span></span><span id="busuanzi_value_site_pv"></span></span><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#9400D3" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script defer src="https://fastly.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script><script defer src="https://fastly.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script><script defer src="/js/search/algolia-search.js" type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"></div><div class="algolia-results"><div id="algolia-stats"></div><div id="algolia-hits"></div><div class="algolia-pagination" id="algolia-pagination"></div></div></div><script>function initMourn() {
+  const date = new Date();
+  const today = (date.getMonth() + 1) + "-" + date.getDate()
+  const mourn_days = ["4-4","9-18","3-3"]
+  if (mourn_days.includes(today)) {
+    document.documentElement.style.filter = "grayscale(1)";
+  }
+}
+initMourn();</script></body></html>

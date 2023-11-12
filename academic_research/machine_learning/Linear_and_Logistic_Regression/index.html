@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#9400D3"><meta name="author" content="Joaquin Chou"><meta name="copyright" content="Joaquin Chou"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>线性回归和逻辑回归 | 喵语小站</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{},
+    ...true?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#9400D3"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"www.joaquinchou.com","root":"/","title":"喵星暖暖窝","version":"1.10.11","mode":"time","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"algolia":{"appID":"L0D85KPS1S","apiKey":"715edff2e91248577c19b580f3efcb3a","indexName":"prod_NAME","hits":{"per_page":8}},"fireworks":{"colors":["0,250,154","255,69,0","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://blog-api-joaquinchou.vercel.app","comment":false,"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><meta name="description" content="关于线性回归和逻辑回归的问题整理。 为什么逻辑斯蒂回归的输出值可以作为概率？因为逻辑回归使用的sigmoid函数可以将线性函数映射到伯努利分布的期望中，并且sigmoid函数是符合广义线性模型的伯努利分布规范的联系函数的反函数。  联系函数：函数的反函数能够将线性方程映射到某个广义线性模型的期望； 广义线性模型：模型可以通过某些变换转化为线性模型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线性回归和逻辑回归">
+<meta property="og:url" content="https://www.joaquinchou.com/academic_research/machine_learning/Linear_and_Logistic_Regression/index.html">
+<meta property="og:site_name" content="喵语小站">
+<meta property="og:description" content="关于线性回归和逻辑回归的问题整理。 为什么逻辑斯蒂回归的输出值可以作为概率？因为逻辑回归使用的sigmoid函数可以将线性函数映射到伯努利分布的期望中，并且sigmoid函数是符合广义线性模型的伯努利分布规范的联系函数的反函数。  联系函数：函数的反函数能够将线性方程映射到某个广义线性模型的期望； 广义线性模型：模型可以通过某些变换转化为线性模型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-16T12:48:40.653Z">
+<meta property="article:author" content="Joaquin Chou">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><canvas id="trianglifyContainer"></canvas><script defer src="https://fastly.jsdelivr.net/npm/trianglify@4/dist/trianglify.bundle.js"></script><script>document.addEventListener("DOMContentLoaded", () => {
+  const pattern = trianglify({
+    width: 800,
+    height: 600,
+    cellSize: 75,
+    palette: ["Oranges", "RdBu", "Purples", "Blues"],
+  });
+  const canvasOpts = {
+    applyCssScaling: false
+  }
+  document.body.appendChild(pattern.toCanvas(trianglifyContainer, canvasOpts));
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Joaquin Chou"><img width="96" loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/JTpLkT.jpg" alt="Joaquin Chou"></a><div class="site-author-name"><a href="/about/">Joaquin Chou</a></div><a class="site-name" href="/about/site.html">喵语小站</a><sub class="site-subtitle">Hope that someone you love would also love you!</sub><div class="site-description">希望你喜欢的人她/他也爱你！</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">17</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">8</span></a></div><a class="site-state-item hty-icon-button" href="/404.html" title="还没想好呢"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/JoaquinChou" title="GitHub" target="_blank" style="color:#FF00FF"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/my/m/music/playlist?id=621567138" title="网易云音乐" target="_blank" style="color:#C20C0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/albums/" title="我的相册" style="color:#DA70D6"><span class="icon iconify" data-icon="ri:gallery-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%BB%E8%BE%91%E6%96%AF%E8%92%82%E5%9B%9E%E5%BD%92%E7%9A%84%E8%BE%93%E5%87%BA%E5%80%BC%E5%8F%AF%E4%BB%A5%E4%BD%9C%E4%B8%BA%E6%A6%82%E7%8E%87%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">为什么逻辑斯蒂回归的输出值可以作为概率？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LR%E6%8E%A8%E5%AF%BC%E7%9B%AE%E6%A0%87%E5%87%BD%E6%95%B0%E5%92%8C%E6%A2%AF%E5%BA%A6%E3%80%82"><span class="toc-number">2.</span> <span class="toc-text">LR推导目标函数和梯度。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%92%8C%E5%9B%9E%E5%BD%92%E9%97%AE%E9%A2%98%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">分类问题和回归问题的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%E5%BD%92%E4%B8%80%E5%8C%96%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">逻辑回归模型是否需要归一化？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E5%92%8C%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%9A%84%E5%BC%82%E5%90%8C%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">逻辑回归和线性回归的异同？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%A0%B7%E7%9A%84%E6%A8%A1%E5%9E%8B%E9%9C%80%E8%A6%81%E7%89%B9%E5%BE%81%E5%BD%92%E4%B8%80%E5%8C%96%EF%BC%9F"><span class="toc-number">6.</span> <span class="toc-text">什么样的模型需要特征归一化？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E5%8D%87%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E7%9A%84%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD%EF%BC%9F"><span class="toc-number">7.</span> <span class="toc-text">如何提升逻辑回归的模型性能？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E4%BB%80%E4%B9%88%E6%9D%A1%E4%BB%B6%E4%B8%8B%E4%B8%8E%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1%E7%AD%89%E4%BB%B7%EF%BC%9F"><span class="toc-number">8.</span> <span class="toc-text">最小二乘法什么条件下与极大似然估计等价？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%81%9A%E7%89%B9%E5%BE%81%E7%A6%BB%E6%95%A3%E5%8C%96%EF%BC%9F"><span class="toc-number">9.</span> <span class="toc-text">逻辑回归为什么要做特征离散化？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E5%A4%9A%E5%88%86%E7%B1%BB%EF%BC%9F"><span class="toc-number">10.</span> <span class="toc-text">逻辑回归怎么实现多分类？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8%E5%B9%B3%E6%96%B9%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%EF%BC%9F"><span class="toc-number">11.</span> <span class="toc-text">逻辑回归为什么不用平方损失函数？</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#9400D3;"><link itemprop="mainEntityOfPage" href="https://www.joaquinchou.com/academic_research/machine_learning/Linear_and_Logistic_Regression/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Joaquin Chou"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="喵语小站"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">线性回归和逻辑回归</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-04-22 00:00:00" itemprop="dateCreated datePublished" datetime="2022-04-22T00:00:00+08:00">2022-04-22</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">1.8k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">6m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span id="busuanzi_value_page_pv"></span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%96%B5%E8%AF%AD%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">喵语笔记</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="--text-color:#3776ab"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">机器学习</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><p>关于线性回归和逻辑回归的<a target="_blank" rel="noopener" href="https://www.nowcoder.com/discuss/681294">问题</a>整理。</p>
+<h2 id="为什么逻辑斯蒂回归的输出值可以作为概率？"><a href="#为什么逻辑斯蒂回归的输出值可以作为概率？" class="headerlink" title="为什么逻辑斯蒂回归的输出值可以作为概率？"></a>为什么逻辑斯蒂回归的输出值可以作为概率？</h2><p>因为<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/441128484">逻辑回归</a>使用的sigmoid函数可以<b>将线性函数映射到伯努利分布的期望</b>中，并且sigmoid函数是符合广义线性模型的伯努利分布规范的联系函数的反函数。</p>
+<ul>
+<li>联系函数：函数的反函数能够将线性方程映射到某个广义线性模型的期望；</li>
+<li>广义线性模型：模型可以通过某些变换转化为线性模型。<span id="more"></span>
+
+</li>
+</ul>
+<h2 id="LR推导目标函数和梯度。"><a href="#LR推导目标函数和梯度。" class="headerlink" title="LR推导目标函数和梯度。"></a>LR推导目标函数和梯度。</h2><p>LR(逻辑斯蒂回归)：从几率的概念构建线性回归模型。<br>$$几率=\frac{事件A发生的概率}{事件A不发生的概率}\in[0,+\infin)$$<br>几率缩写是odds，对数的取值是$R$。<br>二项逻辑斯蒂回归的条件概率分布$P$为<br>$$P(Y=1|x)=\frac{1}{1+e^{-{(\omega^Tx+b)}}}$$<br>$$P(Y=0|x)=\frac{e^{-{(\omega^Tx+b)}}}{1+e^{-{(\omega^Tx+b)}}}$$<br>$\omega^Tx+b$可令成列向量$\omega=[\omega,b]^T,x=[x,1]^T$，令$\pi(x)=P(Y=1|x)$，则有<br>$$\pi(x)=\frac{1}{1+e^{-\omega^Tx}}$$<br>$$1-\pi(x)=\frac{e^{-\omega^Tx}}{1+e^{-\omega^Tx}}$$<br>通过极大似然法估计$\omega$可得LR目标函数为<br>$$L(\omega)=\sum_{i=1}^N[y_ilog\pi(x_i)+(1-y_i)log(1-\pi(x_i))]$$ $$=\sum_{i=1}^N[y_ilog\pi(x_i)+log(1-\pi(x_i))-y_ilog(1-\pi(x_i))]$$ $$=\sum_{i=1}^N[y_ilog\frac{\pi(x_i)}{1-\pi(x_i)}+log(1-\pi(x_i))$$<br>将$\pi(x)=\frac{1}{1+e^{-\omega^Tx}}$带入上式，得到<b><font color='red'>目标函数</font></b>为<br>$$L(\omega)=\sum_{i=1}^N[y_i\omega^Tx_i-log(1+e^{\omega^Tx})]$$</p>
+<p>对应的<b><font color='red'>梯度</font></b>为</p>
+<p>$$\frac{\mathrm{d} L}{\mathrm{d} \omega}=yx-\frac{xe^{\omega^Tx}}{e^{\omega^Tx}+1}=x(y-\pi(x))$$</p>
+<p>再利用梯度下降算法求解即可。</p>
+<h2 id="分类问题和回归问题的区别？"><a href="#分类问题和回归问题的区别？" class="headerlink" title="分类问题和回归问题的区别？"></a>分类问题和回归问题的区别？</h2><ul>
+<li>两者预测的目标变量类型不一样，分类问题的因变量是离散变量，回归问题的因变量是连续变量；<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43741312/article/details/98062287">参考</a></li>
+<li>分类问题是定性问题，回归问题是定量问题；</li>
+<li>它们的根本区别是输出空间<a target="_blank" rel="noopener" href="https://blog.csdn.net/mipikun6449/article/details/119153488">是否为一个度量空间</a>。回归问题的输出空间定义了一个度量去预测输出值和真实值的误差；而分类问题不能来度量，只能具体分为某个类别。</li>
+</ul>
+<h2 id="逻辑回归模型是否需要归一化？"><a href="#逻辑回归模型是否需要归一化？" class="headerlink" title="逻辑回归模型是否需要归一化？"></a>逻辑回归模型是否需要归一化？</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38147421/article/details/120155996">需要。</a> 从梯度反向传播过程来看，逻辑回归模型的参数优化一般采用随机梯度下降算法，<b>如果不对特征进行归一化，可能会使得损失函数值的等高线呈椭球形，这样会花费更多的迭代步数才能到达最优解</b>；</li>
+<li>从损失函数的角度看，逻辑回归的损失函数一般会加入正则化项，这会使得模型参数的大小会影响损失函数的值，而特征是否归一化又会影响模型的参数。所以有必要进行特征归一化。</li>
+</ul>
+<h2 id="逻辑回归和线性回归的异同？"><a href="#逻辑回归和线性回归的异同？" class="headerlink" title="逻辑回归和线性回归的异同？"></a>逻辑回归和线性回归的异同？</h2><ul>
+<li>异：<ul>
+<li>逻辑回归处理的是分类问题，线性回归处理的是回归问题。逻辑回归因变量的取值是一个二项分布，而线性回归输出是近似项。</li>
+<li>逻辑回归的因变量是离散的，线性回归的因变量是连续的。</li>
+</ul>
+</li>
+<li>同：<ul>
+<li>二者都使用极大似然估计进行建模，假设逻辑回归的因变量$y$服从二项分布，则逻辑回归可看成广义的线性模型，可以使用对数似然函数求解参数，假设线性回归模型的<a target="_blank" rel="noopener" href="https://blog.csdn.net/u010462995/article/details/70847146">因变量$y$服从正态分布</a>，可以使用最小二乘法求解参数。</li>
+</ul>
+</li>
+</ul>
+<h2 id="什么样的模型需要特征归一化？"><a href="#什么样的模型需要特征归一化？" class="headerlink" title="什么样的模型需要特征归一化？"></a>什么样的模型需要特征归一化？</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38147421/article/details/120155996">是否需要归一化</a>要看<b>模型是关注变量的取值，还是关注变量的分布以及变量之间的关系</b>。</p>
+<ul>
+<li>SVM，线性回归等最优化问题需要归一化，模型更关注变量的取值；</li>
+<li>像决策树和xgboost等概率模型是不需要进行归一化，模型更关注变量之间的关系；</li>
+<li>神经网络一般是需要标准化(均值方差标准化或者最大最小值标准化)，这样做是为了弱化某些变量取值较大对模型产生影响。</li>
+</ul>
+<h2 id="如何提升逻辑回归的模型性能？"><a href="#如何提升逻辑回归的模型性能？" class="headerlink" title="如何提升逻辑回归的模型性能？"></a>如何提升逻辑回归的模型性能？</h2><p>逻辑回归是通过假设数据服从<b>伯努利分布</b>，通过极大似然估计的方法，利用梯度下降来求解参数，来到达将数据进行二分类的目的。</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/46591702">提升性能</a>的方法有<b>特征离散化、特征交叉、使用正则化，调参(学习率或者正则化参数)，GBDT提取高阶特征</b>。</p>
+<h2 id="最小二乘法什么条件下与极大似然估计等价？"><a href="#最小二乘法什么条件下与极大似然估计等价？" class="headerlink" title="最小二乘法什么条件下与极大似然估计等价？"></a>最小二乘法什么条件下与极大似然估计等价？</h2><p><b>当测量误差服从均值为0的正态分布时，二者等价。</b><br><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/20447622/answer/25186207">推导如下</a>:</p>
+<p>线性回归模型为：<br>$$f(x)=\sum_{j=1}^dx_j\omega_j+ \epsilon=x\omega^T+\epsilon$$</p>
+<p>其中$x\in\R^{1×d}，\omega\in\R^{1×d},\epsilon\in\R$。令$X={x_1,x_2,…,x_n} \in R^{n×d},y\in\R^{n×1}$，有<br>$$f(x)=X\omega^T+\epsilon$$<br>假设$\epsilon_i\sim(0,\sigma^2)$，则有$y_i\sim N(x_i\omega^T, \sigma^2)$，极大似然估计推导如下：<br>$$\underset {\omega} {\operatorname {argmax}} L(\omega)=ln \overset{n}{\underset{i=1}{\Pi}}\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(y_i-x_i\omega^T)^2}{2\sigma^2}}=-nln\sqrt{2\pi}\sigma-\overset{n}{\underset{i=1}{\sum}}\frac{(y_i-x_i\omega^T)^2}{2\sigma^2}$$<br>上式等价于<br>$$\underset {\omega} {\operatorname {argmin}} L(\omega)=\overset{n}{\underset{i=1}{\sum}}(y_i-x_i\omega^T)^2$$<br>即最小二乘法。</p>
+<h2 id="逻辑回归为什么要做特征离散化？"><a href="#逻辑回归为什么要做特征离散化？" class="headerlink" title="逻辑回归为什么要做特征离散化？"></a>逻辑回归为什么要做特征离散化？</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/yang090510118/article/details/39478033">离散化</a>后稀疏向量的内积<b>乘法运算速度快</b>，计算简单；</li>
+<li>离散化后的特征能使得对异常数据的值具有<b>较强的鲁棒性</b>；</li>
+<li>逻辑回归属于广义线性模型，表达能力有限，进行特征离散化后相当于<b>为模型引入了非线性</b>，能增强模型的泛化能力。</li>
+</ul>
+<h2 id="逻辑回归怎么实现多分类？"><a href="#逻辑回归怎么实现多分类？" class="headerlink" title="逻辑回归怎么实现多分类？"></a>逻辑回归怎么实现多分类？</h2><ul>
+<li>根据<b>每个类别构建一个二分类器</b>，本类别的样本标签定义为1，其他类别定义为0，有多少个类别就构建多少个二分类器。</li>
+<li>也可以<b>使用softmax损失函数实现多分类</b>，softmax的输出是每个样本对应各个类别的概率，最后的预测类型是输出概率最高的类别。</li>
+<li>若所有类别之间有明显的互斥关系，则使用softmax分类器，若所有类别之间不互斥并且有交叉，则考虑构建类别数个逻辑回归分类器。</li>
+</ul>
+<h2 id="逻辑回归为什么不用平方损失函数？"><a href="#逻辑回归为什么不用平方损失函数？" class="headerlink" title="逻辑回归为什么不用平方损失函数？"></a>逻辑回归为什么不用平方损失函数？</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/46591702">不使用平方损失</a>，因为逻辑回归使用Sigmoid函数作为样本概率输出时，<b>使用平方损失会使得构造出来的损失函数是非凸的，不容易求解，并且参数容易陷入局部最优解</b>。而使用极大似然估计，目标函数是对数似然函数，该函数时未知参数的高阶连续可导的凸函数，便于求解全局最优解。</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">来都来了，不点一下麽？(●ˇ∀ˇ●)</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png" alt="QQ 支付" title="QQ 支付"></a><div><span style="color:#12B7F5"><span class="icon iconify" data-icon="ri:qq-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Joaquin Chou</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://www.joaquinchou.com/academic_research/machine_learning/Linear_and_Logistic_Regression/" title="线性回归和逻辑回归">https://www.joaquinchou.com/academic_research/machine_learning/Linear_and_Logistic_Regression/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：Joaquin Chou\n本文链接：https://www.joaquinchou.com/academic_research/machine_learning/Linear_and_Logistic_Regression/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/academic_research/machine_learning/KNN/" rel="prev" title="k近邻算法"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">k近邻算法</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/academic_research/machine_learning/PR_and_F_and_ROC/" rel="next" title="评价指标的那些事儿"><span class="post-nav-text">评价指标的那些事儿</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>可以点击下方进行评论哟！</span><br></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/academic_research/machine_learning/Linear_and_Logistic_Regression/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2023 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> Joaquin Chou</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v6.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-11-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div id="busuanzi"><span id="busuanzi_container_site_uv" title="总访客量"><span><span class="icon iconify" data-icon="ri:user-line"></span></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><span class="icon iconify" data-icon="ri:eye-line"></span></span><span id="busuanzi_value_site_pv"></span></span><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#9400D3" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script defer src="https://fastly.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script><script defer src="https://fastly.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script><script defer src="/js/search/algolia-search.js" type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"></div><div class="algolia-results"><div id="algolia-stats"></div><div id="algolia-hits"></div><div class="algolia-pagination" id="algolia-pagination"></div></div></div><script>function initMourn() {
+  const date = new Date();
+  const today = (date.getMonth() + 1) + "-" + date.getDate()
+  const mourn_days = ["4-4","9-18","3-3"]
+  if (mourn_days.includes(today)) {
+    document.documentElement.style.filter = "grayscale(1)";
+  }
+}
+initMourn();</script></body></html>

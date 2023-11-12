@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#9400D3"><meta name="author" content="Joaquin Chou"><meta name="copyright" content="Joaquin Chou"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>Classification | 喵语小站</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{},
+    ...true?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#9400D3"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"www.joaquinchou.com","root":"/","title":"喵星暖暖窝","version":"1.10.11","mode":"time","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"algolia":{"appID":"L0D85KPS1S","apiKey":"715edff2e91248577c19b580f3efcb3a","indexName":"prod_NAME","hits":{"per_page":8}},"fireworks":{"colors":["0,250,154","255,69,0","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://blog-api-joaquinchou.vercel.app","comment":false,"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><meta name="description" content="概述&amp;emsp;&amp;emsp;在机器学习中，分类问题是指给定一个输入，当输入经过某个模型后，输出判断该输入的所属类别。常见的应用有信贷评估（根据某人的收入、存款、职业、年龄等判断是否给他贷款），医学诊断（根据某人的性别、年龄和目前症状判断他患上哪一类型的疾病），手写体的识别和人脸识别。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Classification">
+<meta property="og:url" content="https://www.joaquinchou.com/academic_research/machine_learning/classification/index.html">
+<meta property="og:site_name" content="喵语小站">
+<meta property="og:description" content="概述&amp;emsp;&amp;emsp;在机器学习中，分类问题是指给定一个输入，当输入经过某个模型后，输出判断该输入的所属类别。常见的应用有信贷评估（根据某人的收入、存款、职业、年龄等判断是否给他贷款），医学诊断（根据某人的性别、年龄和目前症状判断他患上哪一类型的疾病），手写体的识别和人脸识别。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azUv80.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azapKU.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azUzvT.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/aza9rF.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaFa9.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaiVJ.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azak5R.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaCb4.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaZ26.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaV8x.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaexK.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaQVH.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaKqe.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaurD.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azalad.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaJRP.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/aza8PI.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaGGt.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaYxf.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaUsS.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/azaNM8.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/13/aza0aj.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/16/dEaNWT.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/16/dEaaSU.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/16/dEatYV.jpg">
+<meta property="article:published_time" content="2020-08-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-06T15:34:50.878Z">
+<meta property="article:author" content="Joaquin Chou">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2020/08/13/azUv80.jpg"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><canvas id="trianglifyContainer"></canvas><script defer src="https://fastly.jsdelivr.net/npm/trianglify@4/dist/trianglify.bundle.js"></script><script>document.addEventListener("DOMContentLoaded", () => {
+  const pattern = trianglify({
+    width: 800,
+    height: 600,
+    cellSize: 75,
+    palette: ["Oranges", "RdBu", "Purples", "Blues"],
+  });
+  const canvasOpts = {
+    applyCssScaling: false
+  }
+  document.body.appendChild(pattern.toCanvas(trianglifyContainer, canvasOpts));
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Joaquin Chou"><img width="96" loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/JTpLkT.jpg" alt="Joaquin Chou"></a><div class="site-author-name"><a href="/about/">Joaquin Chou</a></div><a class="site-name" href="/about/site.html">喵语小站</a><sub class="site-subtitle">Hope that someone you love would also love you!</sub><div class="site-description">希望你喜欢的人她/他也爱你！</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">17</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">8</span></a></div><a class="site-state-item hty-icon-button" href="/404.html" title="还没想好呢"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/JoaquinChou" title="GitHub" target="_blank" style="color:#FF00FF"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/my/m/music/playlist?id=621567138" title="网易云音乐" target="_blank" style="color:#C20C0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/albums/" title="我的相册" style="color:#DA70D6"><span class="icon iconify" data-icon="ri:gallery-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B%EF%BC%9A%E5%88%92%E5%88%86%E5%AE%9D%E5%8F%AF%E6%A2%A6%E7%9A%84%E7%A7%8D%E7%B1%BB"><span class="toc-number">2.</span> <span class="toc-text">案例：划分宝可梦的种类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5"><span class="toc-number">2.1.</span> <span class="toc-text">输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E6%A8%A1"><span class="toc-number">2.2.</span> <span class="toc-text">建模</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.2.1.</span> <span class="toc-text">回归模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.2.2.</span> <span class="toc-text">概率模型</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%88%86%E7%B1%BB%E5%8E%9F%E7%90%86"><span class="toc-number">2.2.2.1.</span> <span class="toc-text">分类原理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%A6%82%E7%8E%87%E4%B8%8E%E5%88%86%E7%B1%BB%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">2.2.2.2.</span> <span class="toc-text">概率与分类的关系</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83"><span class="toc-number">2.2.2.3.</span> <span class="toc-text">高斯分布</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1"><span class="toc-number">2.3.</span> <span class="toc-text">最大似然估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%B1%BB%E7%BB%93%E6%9E%9C"><span class="toc-number">2.4.</span> <span class="toc-text">分类结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E6%94%B9%E8%BF%9B"><span class="toc-number">2.5.</span> <span class="toc-text">模型改进</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B9%E8%BF%9B%E6%96%B9%E6%B3%95"><span class="toc-number">2.5.1.</span> <span class="toc-text">改进方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B9%E8%BF%9B%E7%BB%93%E6%9E%9C"><span class="toc-number">2.5.2.</span> <span class="toc-text">改进结果</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%E5%BB%BA%E6%A8%A1%E6%80%BB%E7%BB%93"><span class="toc-number">2.6.</span> <span class="toc-text">分类问题建模总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Sigmoid%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC"><span class="toc-number">3.</span> <span class="toc-text">Sigmoid函数的推导</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#9400D3;"><link itemprop="mainEntityOfPage" href="https://www.joaquinchou.com/academic_research/machine_learning/classification/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Joaquin Chou"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="喵语小站"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Classification</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2020-08-16 00:00:00" itemprop="dateCreated datePublished" datetime="2020-08-16T00:00:00+08:00">2020-08-16</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">3.7k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">13m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span id="busuanzi_value_page_pv"></span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%96%B5%E8%AF%AD%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">喵语笔记</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="--text-color:#3776ab"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">机器学习</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a><b>概述</b></h2><p>&emsp;&emsp;在机器学习中，分类问题是指<b>给定一个输入，当输入经过某个模型后，输出判断该输入的所属类别</b>。常见的应用有信贷评估（根据某人的收入、存款、职业、年龄等判断是否给他贷款），医学诊断（根据某人的性别、年龄和目前症状判断他患上哪一类型的疾病），手写体的识别和人脸识别。</p>
+<span id="more"></span>
+<h2 id="案例：划分宝可梦的种类"><a href="#案例：划分宝可梦的种类" class="headerlink" title="案例：划分宝可梦的种类"></a><b>案例：划分宝可梦的种类</b></h2><p>&emsp;&emsp;在本例中，我们已知宝可梦具有18种类型（如下图，水系，雷系，草系等等），我们的任务是找到一个模型，使得输入一个宝可梦，输出是它的所属类型。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azUv80.jpg" alt="azUv80.jpg" border="0" / loading="lazy">
+
+<p>&emsp;&emsp;划分宝可梦分类这件事有什么意义呢？由下图可知，不同类别的宝可梦存在着相互制约的关系，当在决斗时，对手派出一个从未见过的宝可梦时，一旦我们能成功把它分对类，就可以按照下图派出能克制住它的宝可梦。从而百战不殆。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azapKU.jpg" alt="azapKU.jpg" border="0" / loading="lazy">
+
+<h3 id="输入"><a href="#输入" class="headerlink" title="输入"></a><b>输入</b></h3><p>&emsp;&emsp;明确我们的任务后，首先开始采集数据，即宝可梦的特征。如下图所示。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azUzvT.jpg" alt="azUzvT.jpg" border="0" / loading="lazy">
+
+<p>比如一只皮卡丘有7个特征(HP、Attack、Defense、SP atk、SP def等等)，这七个特征可用一个向量来描述。我们下一步要做的事是将数据输入到一个函数里，输出是某个种类的宝可梦。</p>
+<h3 id="建模"><a href="#建模" class="headerlink" title="建模"></a><b>建模</b></h3><p>&emsp;&emsp;为简单起见，本例先描述二分类问题。</p>
+<h4 id="回归模型"><a href="#回归模型" class="headerlink" title="回归模型"></a><b>回归模型</b></h4><p>&emsp;&emsp;能不能采用Regression的方法进行二分类呢？如下图所示，我们假设类别1 的宝可梦的目标值是1，类别2的宝可梦目标值是-1，两种类型输出越靠近目标值越好。</p>
+<p>&emsp;&emsp;如果恰好数据分布如下图左所示，我们确实能将二者分类并且效果不错，分界线就是绿线$y=b+\omega_1x_1+\omega_2x_2$，但如果蓝色数据的分布是下图右所示，比起左图，它存在了一些目标值远大于1的样本，这个时候我们是没有办法通过Regression训练得到绿色的线，只能得到紫色的线。为什么会这样呢？因为Regression的最终目标是使得$Loss$函数最小，为了达到这个目标，它会更偏向于靠近离群点方向。它认为紫色的线才是最好的函数。</p>
+<p>&emsp;&emsp;可见Regression和Classification的目标是不一致的，所以采用回归的方法去解决分类问题是不适用的。并且在面对多分类问题时，如果我们把类别1的目标值设定为1，类别2的目标值设定为2，目标3 的目标值设定为3，这样的话由于1、2、3数值的设定而默认了类别1和类别2有关系（因为在数值上，1和2的距离比1和3更近），但实际上种类之间是没有关系的。所以采用Regression的方法不可靠。</p>
+<img src="https://s1.ax1x.com/2020/08/13/aza9rF.jpg" alt="aza9rF.jpg" border="0" / loading="lazy">
+
+<h4 id="概率模型"><a href="#概率模型" class="headerlink" title="概率模型"></a>概率模型</h4><p>&emsp;&emsp;既然不能采用Regression的通用方法，比较理想的做法如下。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaFa9.jpg" alt="azaFa9.jpg" border="0" / loading="lazy">
+
+<p>其中建模时对于二分类问题，一种可能的想法是在$f(x)$中内嵌一个函数$g(x)$，根据$g(x)$的正负判断输出的类型。损失函数$L(f)$的定义为在训练集中预测分类错误的次数之和，怎么找出最小的$Loss$函数呢？由于$L(f)$不可微分，所以不能采用梯度下降的方法，可使用感知机（Perceptron）或SVM（支持向量机）。但今天主要从概率学的角度介绍另一种方法。</p>
+<h5 id="分类原理"><a href="#分类原理" class="headerlink" title="分类原理"></a><b>分类原理</b></h5><p>&emsp;&emsp;假设有两个盒子，各装了5个球，还得知随机抽一个球，抽到的是盒子1的球的概率是 $\frac{2}{3}$，是盒子2的球的概率是$\frac{1}{3}$。从盒子中蓝色球和绿色球的分配可以得到：</p>
+<ul>
+<li>在盒子1中随机抽一个球，是蓝色的概率为 $\frac{4}{5}$，绿色的概率为 $\frac{1}{5}$</li>
+<li>在盒子2中随机抽一个球，是蓝色的概率为$\frac{2}{5}$，绿色的概率为 $\frac{3}{5}$</li>
+</ul>
+<p>现在问抽到一个蓝球，它属于盒子1的概率？</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaiVJ.jpg" alt="azaiVJ.jpg" border="0" / loading="lazy">
+
+<p>如上图所示，我们已知盒子1条件下是蓝球的概率，盒子2条件下是蓝球的概率，盒子1和盒子2各自的选取概率。根据<b><font color='red'>贝叶斯公式可以求得后验概率（Posterior Probability）</font></b>$P(B_1|Blue)$，即抽到是蓝球条件下属于盒子1的概率。</p>
+<h5 id="概率与分类的关系"><a href="#概率与分类的关系" class="headerlink" title="概率与分类的关系"></a><b>概率与分类的关系</b></h5><p>&emsp;&emsp;那上面的例子和分类有什么关系呢？这时我们把盒子1 换成类别$C_1$，把盒子2换成类别$C_2$，把蓝球换成我们要分类的样本$x$，同理如果我们已知下图红框的4个概率，根据<b>贝叶斯公式</b>可以求出后验概率$P(C_1|x)和$$P(C_2|x)$。</p>
+<p>所以对于分类问题，我们的做法就是在训练集中求出图下的四个概率，再用<b>贝叶斯公式</b>某类别的后验概率。根据概率的大小判断属于某个类别。这套想法叫<b><font color='red'>生成模型（Generative Model）</font></b>，为什么叫生成模型呢？因为我们可以通过红框的四个概率计算得到$x$的全概率，也就是$x$的分布，知道分布后我们就可以生成$x$。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azak5R.jpg" alt="azak5R.jpg" border="0" / loading="lazy">
+
+<p>&emsp;&emsp;将生成模型运用到宝可梦的案例中，这里我们以二分类问题为例子，即宝可梦是属于水系还是一般系。训练集中总共79只水系的，61只正常系的。从水系中抽取一只宝可梦的概率和从正常系中抽出一只宝可梦的概率如下。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaCb4.jpg" alt="azaCb4.jpg" border="0" / loading="lazy">
+
+<p>那么我们现在的问题是，抓到了一只原盖海龟$x$，它属于水系的概率$P(C_1|x)$多大呢？根据贝叶斯公式，我们还差$P(x|C_1)$和$P(x|C_2)$未知，但是在原来的水系里根本就没有海龟这个样本，如果令$P(x|C_1)=0$，显然不对。</p>
+<p>&emsp;&emsp;由于在模型中，我们的输入是宝可梦的一系列特征，这里以宝可梦的Defense和SP Defense两个特征为例，将这79只宝可梦的两个特征可视化如下图所示。由于训练集的数据往往只是冰山一角，对于新样本的预测，数据必须服从某分布才能被预测。这里计算$P(C_1|x)$的前提是<b>假设水系宝可梦的数据是服从一个高斯分布的</b>。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaZ26.jpg" alt="azaZ26.jpg" border="0" / loading="lazy">
+
+
+
+<h5 id="高斯分布"><a href="#高斯分布" class="headerlink" title="高斯分布"></a><b>高斯分布</b></h5><p>&emsp;&emsp;高斯分布（Gaussian Distribution）的表达式如下所示。可知对于一个服从高斯分布的函数$f_{\mu,\Sigma}(x)$，只要确定了均值$\mu$和协方差矩阵$\Sigma$，就能够知道变量$x$的分布。（注：表达式中$D$是指向量的维度）不同均值$\mu$和协方差矩阵$\Sigma$代表的高斯分布也不同。如下两图是同一个$\Sigma$，不同$\mu$时的分布。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaV8x.jpg" alt="azaV8x.jpg" border="0" / loading="lazy">
+
+<p>下两图是同一个$\mu$，不同$\Sigma$时的高斯分布。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaexK.jpg" alt="azaexK.jpg" border="0" / loading="lazy">
+
+<p>其实对于宝可梦这79个样本点，任意确定均值$\mu$和协方差矩阵$\Sigma$都可以生成，只是它们生成每个点的概率大小不一样而已。如下图所示，对于靠左边的高斯分布生成这些点的可能性显然比右边的高斯分布要高。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaQVH.jpg" alt="azaQVH.jpg" border="0" / loading="lazy">
+
+<p>所以我们的任务变成了找一个最好的$\mu$和$\Sigma$，使得它们组成的高斯分布生成的各个采样点的概率最大。</p>
+<h3 id="最大似然估计"><a href="#最大似然估计" class="headerlink" title="最大似然估计"></a><b>最大似然估计</b></h3><p>&emsp;&emsp;完成上述任务最直接的方法就是最大似然估计（Maxium Likelihood）,具体的做法时由于每个样本点都是独立采样的，对于给定的$\mu$和$\Sigma$，它们的概率记为下图中的$L(\mu,\Sigma)$，根据独立事件的定义可以将$L(\mu,\Sigma)$表示出来。$L(\mu,\Sigma)$也被称为样本的“似然函数”，接着要求使得似然函数$L(\mu,\Sigma)$值最大的$\mu$和$\Sigma$，记为$\mu^*$和$\Sigma^*$。</p>
+<p>&emsp;&emsp;关于$\mu^*$和$\Sigma^*$值的计算，我们可以分别对$\mu$和$\Sigma$求偏微分，令偏导等于0可以得到下图的公式和结果。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaKqe.jpg" alt="azaKqe.jpg" border="0" / loading="lazy">
+
+
+
+<p>&emsp;&emsp;通过最大似然估计的方法，我们可以计算出两个系高斯分布的$\mu$和$\Sigma$，得到的结果如下。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaurD.jpg" alt="azaurD.jpg" border="0" / loading="lazy">
+
+
+
+
+
+<h3 id="分类结果"><a href="#分类结果" class="headerlink" title="分类结果"></a><b>分类结果</b></h3><p>&emsp;&emsp;回到原来的问题，新来的原盖海龟$x$，它属于水系的概率$P(C_1|x)$多大呢？这下可以计算了。根据贝叶斯公式，我们要确定$P(x|C_1)$和$P(x|C_2)   $ ，$P(C_1)$和$P(C_2)$，这四个值的大小计算如下。最后计算出结果$P(C_1|x)&gt;0.5$，那它就属于水系。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azalad.jpg" alt="azalad.jpg" border="0" / loading="lazy">
+
+<p>根据宝可梦的Defense和SP Defense两个特征的分类结果如下。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaJRP.jpg" alt="azaJRP.jpg" border="0" / loading="lazy">
+
+<p>偏蓝部分是一般系的，偏红部分是水系的。可以看出只考虑这两个特征分类效果并不是很好，在测试集上的准确率只有47%。是不是因为我们考虑的特征太少了呢？在这里我们又把7个特征全考虑进去进行分类（当然7维空间图肯定画不出来，但计算机可以计算出来），最后在测试集上的准确度是54%，结果坏掉了。</p>
+<p>&emsp;最后归结原因为可能一般系和水系根本就没办法通过特征区分出来。或者是因为我们生成的协方差矩阵是$\Sigma^1$和$\Sigma^2$，协方差矩阵是和输入特征大小的平方成正比，所以当特征很大时，协方差矩阵是可以增长很快的。<b>也就是模型的参数过多，这容易造成”过拟合”。</b></p>
+<h3 id="模型改进"><a href="#模型改进" class="headerlink" title="模型改进"></a><b>模型改进</b></h3><h4 id="改进方法"><a href="#改进方法" class="headerlink" title="改进方法"></a><b>改进方法</b></h4><p>&emsp;&emsp;针对上述“过拟合”问题，我们对模型进行改进。思路是减少模型的参数，想法是共享两个高斯分布的协方差矩阵$\Sigma$。如下图所示。对于“水系”宝可梦，编码是1～79，服从的高斯分布均值为$\mu_1$；对于“一般系”的宝可梦，编码是80~140，服从的高斯分布均为$\mu_2$，它们的协方差矩阵都是$\Sigma$。</p>
+<p>&emsp;&emsp;接着我们的任务是使用<b><font color='red'>最大似然估计</font></b>的方法计算使得似然函数$L(\mu_1,\mu_2,\Sigma)$最大的$\mu_1,\mu_2,\Sigma$。其中$\mu_1,\mu_2$的做法是和原来一样，而$\Sigma$的计算是原来$\Sigma^1,\Sigma^2$的加权平均。</p>
+<img src="https://s1.ax1x.com/2020/08/13/aza8PI.jpg" alt="aza8PI.jpg" border="0" / loading="lazy">
+
+<h4 id="改进结果"><a href="#改进结果" class="headerlink" title="改进结果"></a><b>改进结果</b></h4><p>&emsp;&emsp;改进的结果如下所示。如果只考虑两个特征——SP Defense和Defense，输入空间是二维的。在我们从没有共享两个不同系的高斯分布协方差到共享它们的协方差矩阵，可以看出分界线也从曲线变成了直线。这种分类也称为“线性模型”。</p>
+<p>&emsp;&emsp;但分类结果并不是很好（由于是二维空间，人眼就能看出分类）。如果考虑所有的7个特征，即输入空间是七维的。分类准确率从原来的54%提升到73%。所以说机器学习迷人的地方还在于它能处理高维度且人类无法直观想象的事情。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaGGt.jpg" alt="azaGGt.jpg" border="0" / loading="lazy">
+
+<h3 id="分类问题建模总结"><a href="#分类问题建模总结" class="headerlink" title="分类问题建模总结"></a><b>分类问题建模总结</b></h3><p>&emsp;&emsp;&emsp;在本例中，已经确定了使用概率模型和假设样本服从高斯分布。所以总结步骤如下。</p>
+<ol>
+<li>四个先验概率通过贝叶斯公式计算出某一个样本的后验概率，根据概率值是否大于0.5进行分类；（建模）</li>
+<li>如果遇到数据集中没有的样本$x$，我们可以假设所有的样本服从某一个分布，本例使用高斯分布，列出似然函数的式子；（找一个评价函数）</li>
+<li>将已有数据通过最大似然估计法计算出最好的$\mu$和$\Sigma$，再求出样本$x$的四个先验概率进行分类。（选出最好的函数）</li>
+</ol>
+<img src="https://s1.ax1x.com/2020/08/13/azaYxf.jpg" alt="azaYxf.jpg" border="0" / loading="lazy">
+
+<p>&emsp;&emsp;<b><font color='red'>关于要怎样选择服从分布的问题</font></b>，这主要依靠人去调节，具体问题具体分析。如果是二分类问题（判断宝可梦是不是神兽），此时可以选用<b>二项分布（Bernouli Distribution）</b>。如果恰好问题的各个特征之间都是统计独立的，此时可以使用<b>朴素贝叶斯分类（Naive Bayes Classifier）</b>。朴素贝叶斯分类的计算方法如下，假设问题的输入有$K$个特征，并且它们之间都是统计独立的服从一维高斯分布，最终先验概率的求解为各个特征的概率相乘。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaUsS.jpg" alt="azaUsS.jpg" border="0" / loading="lazy">
+
+<h2 id="Sigmoid函数的推导"><a href="#Sigmoid函数的推导" class="headerlink" title="Sigmoid函数的推导"></a><b>Sigmoid函数的推导</b></h2><p>&emsp;&emsp;为什么会突然讲到Sigmoid函数的推导呢？因为在上述讲概率模型时讲到了贝叶斯公式，而由贝叶斯公式得到的后验概率$P(C_1|x)$经过推导后，发现就是Sigmoid函数$\sigma(z)$，推导过程如下。</p>
+<img src="https://s1.ax1x.com/2020/08/13/azaNM8.jpg" alt="azaNM8.jpg" border="0" / loading="lazy">
+
+<p>$\sigma(z)=\frac1{1+e^{-z} }$的$z$取值$(-\infty,+\infty)$的图像如上所示。当$z$趋于$-\infty$时，函数值趋于0，当$z$趋于$+\infty$时，函数值趋于1。</p>
+<p>那$z$的图像应该长什么样子呢？这里我们还是以二分类问题为例，假设生成两个类别的数据服从高斯分布，可得到以下式子：</p>
+<img src="https://s1.ax1x.com/2020/08/13/aza0aj.jpg" alt="aza0aj.jpg" border="0" / loading="lazy">
+
+<p>其中$N_1$和$N_2$各表示各自类别样本个数。</p>
+<img src="https://s1.ax1x.com/2020/08/16/dEaNWT.jpg" alt="dEaNWT.jpg" border="0" / loading="lazy">
+
+<img src="https://s1.ax1x.com/2020/08/16/dEaaSU.jpg" alt="dEaaSU.jpg" border="0" / loading="lazy">
+
+<p>由于为了防止模型参数过多而造成过拟合问题，我们还假设了两个类别服从的高斯分布的协方差矩阵都是$\Sigma$。</p>
+<img src="https://s1.ax1x.com/2020/08/16/dEatYV.jpg" alt="dEatYV.jpg" border="0" / loading="lazy">
+
+<p>&emsp;&emsp;经过一系列运算，我们得到$P(C_1|x)=\sigma(w\cdot x+b)$，（$z$的结果中$x$前面的系数记为$\omega^T$，后三项的结果记为常数$b$，写成$w\cdot x$是因为$\omega$和$x$都是列向量，$\omega\cdot x=（\omega^T）*x$）。</p>
+<p>&emsp;&emsp;根据这个结果，就可以解释为什么在模型改进时我们共用了协方差矩阵后的分界线是线性的。直观上我们通过计算$N_1,N_2,\mu^1,\mu^2,\Sigma$确实可以算出$z$。但太麻烦了，在Logistic Regression中我们还有别的方法。</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">来都来了，不点一下麽？(●ˇ∀ˇ●)</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png" alt="QQ 支付" title="QQ 支付"></a><div><span style="color:#12B7F5"><span class="icon iconify" data-icon="ri:qq-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Joaquin Chou</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://www.joaquinchou.com/academic_research/machine_learning/classification/" title="Classification">https://www.joaquinchou.com/academic_research/machine_learning/classification/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：Joaquin Chou\n本文链接：https://www.joaquinchou.com/academic_research/machine_learning/classification/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/academic_research/machine_learning/logistic_regression/" rel="prev" title="Logistic Regression"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">Logistic Regression</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/academic_research/machine_learning/bias_and_variance/" rel="next" title="Bias and Variance"><span class="post-nav-text">Bias and Variance</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>可以点击下方进行评论哟！</span><br></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/academic_research/machine_learning/classification/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2023 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> Joaquin Chou</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v6.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-11-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div id="busuanzi"><span id="busuanzi_container_site_uv" title="总访客量"><span><span class="icon iconify" data-icon="ri:user-line"></span></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><span class="icon iconify" data-icon="ri:eye-line"></span></span><span id="busuanzi_value_site_pv"></span></span><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#9400D3" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script defer src="https://fastly.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script><script defer src="https://fastly.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script><script defer src="/js/search/algolia-search.js" type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"></div><div class="algolia-results"><div id="algolia-stats"></div><div id="algolia-hits"></div><div class="algolia-pagination" id="algolia-pagination"></div></div></div><script>function initMourn() {
+  const date = new Date();
+  const today = (date.getMonth() + 1) + "-" + date.getDate()
+  const mourn_days = ["4-4","9-18","3-3"]
+  if (mourn_days.includes(today)) {
+    document.documentElement.style.filter = "grayscale(1)";
+  }
+}
+initMourn();</script></body></html>

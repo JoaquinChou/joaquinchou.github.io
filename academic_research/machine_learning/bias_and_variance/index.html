@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#9400D3"><meta name="author" content="Joaquin Chou"><meta name="copyright" content="Joaquin Chou"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>Bias and Variance | 喵语小站</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{},
+    ...true?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#9400D3"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"www.joaquinchou.com","root":"/","title":"喵星暖暖窝","version":"1.10.11","mode":"time","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"algolia":{"appID":"L0D85KPS1S","apiKey":"715edff2e91248577c19b580f3efcb3a","indexName":"prod_NAME","hits":{"per_page":8}},"fireworks":{"colors":["0,250,154","255,69,0","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://blog-api-joaquinchou.vercel.app","comment":false,"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><script>(function(){
+  var bp = document.createElement('script');
+  var curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https') {
+    bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else {
+    bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})();</script><meta name="description" content="&amp;emsp;&amp;emsp;关于机器学习的入门课，个人感觉没太多新东西，只是当时有空就顺便写下哈哈哈，其实这些基础概念知乎博客应该比比皆是，但是我既然写过了不放上博客感觉自己好像白写了，呜呜呜。放上面有时候自己看看也有点小成就感(￣︶￣*))">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bias and Variance">
+<meta property="og:url" content="https://www.joaquinchou.com/academic_research/machine_learning/bias_and_variance/index.html">
+<meta property="og:site_name" content="喵语小站">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;关于机器学习的入门课，个人感觉没太多新东西，只是当时有空就顺便写下哈哈哈，其实这些基础概念知乎博客应该比比皆是，但是我既然写过了不放上博客感觉自己好像白写了，呜呜呜。放上面有时候自己看看也有点小成就感(￣︶￣*))">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5Z4ts.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5Zspt.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5Zy1P.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5Zhkj.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5Z5hn.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5ZqnU.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5ep1x.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5eFBD.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5e9c6.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5einO.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5eEAH.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/08/08/a5eugP.jpg">
+<meta property="article:published_time" content="2020-08-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-06T15:34:40.070Z">
+<meta property="article:author" content="Joaquin Chou">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2020/08/08/a5Z4ts.jpg"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><canvas id="trianglifyContainer"></canvas><script defer src="https://fastly.jsdelivr.net/npm/trianglify@4/dist/trianglify.bundle.js"></script><script>document.addEventListener("DOMContentLoaded", () => {
+  const pattern = trianglify({
+    width: 800,
+    height: 600,
+    cellSize: 75,
+    palette: ["Oranges", "RdBu", "Purples", "Blues"],
+  });
+  const canvasOpts = {
+    applyCssScaling: false
+  }
+  document.body.appendChild(pattern.toCanvas(trianglifyContainer, canvasOpts));
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Joaquin Chou"><img width="96" loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/JTpLkT.jpg" alt="Joaquin Chou"></a><div class="site-author-name"><a href="/about/">Joaquin Chou</a></div><a class="site-name" href="/about/site.html">喵语小站</a><sub class="site-subtitle">Hope that someone you love would also love you!</sub><div class="site-description">希望你喜欢的人她/他也爱你！</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">17</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">4</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">8</span></a></div><a class="site-state-item hty-icon-button" href="/404.html" title="还没想好呢"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/JoaquinChou" title="GitHub" target="_blank" style="color:#FF00FF"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/my/m/music/playlist?id=621567138" title="网易云音乐" target="_blank" style="color:#C20C0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/albums/" title="我的相册" style="color:#DA70D6"><span class="icon iconify" data-icon="ri:gallery-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%8B%9F%E5%90%88%E7%9A%84%E8%AF%AF%E5%B7%AE%E6%9D%A5%E6%BA%90"><span class="toc-number">1.</span> <span class="toc-text">机器学习拟合的误差来源</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AF%E5%B7%AE%E6%9D%A5%E6%BA%90"><span class="toc-number">1.1.</span> <span class="toc-text">误差来源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%8F%E5%B7%AE%E5%92%8C%E6%96%B9%E5%B7%AE"><span class="toc-number">1.2.</span> <span class="toc-text">偏差和方差</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">1.2.1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%87%E5%80%BC%E5%92%8C%E6%96%B9%E5%B7%AE%E7%9A%84%E4%BC%B0%E7%AE%97"><span class="toc-number">1.2.2.</span> <span class="toc-text">均值和方差的估算</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%A4%8D%E6%9D%82%E5%BA%A6%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-number">1.3.</span> <span class="toc-text">模型复杂度的影响</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E6%A8%A1%E5%9E%8B%E5%AF%B9%E6%96%B9%E5%B7%AE%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-number">1.3.1.</span> <span class="toc-text">不同模型对方差的影响</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E6%A8%A1%E5%9E%8B%E5%AF%B9%E5%81%8F%E5%B7%AE%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-number">1.3.2.</span> <span class="toc-text">不同模型对偏差的影响</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A7%E7%94%9F%E5%BD%B1%E5%93%8D%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">1.3.3.</span> <span class="toc-text">产生影响的原因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%A0%E6%88%90%E5%BD%B1%E5%93%8D%E7%9A%84%E5%90%8E%E6%9E%9C%E5%92%8C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.4.</span> <span class="toc-text">造成影响的后果和解决方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E7%9A%84%E9%80%89%E6%8B%A9"><span class="toc-number">1.4.</span> <span class="toc-text">模型的选择</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81"><span class="toc-number">1.4.1.</span> <span class="toc-text">交叉验证</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="toc-number">1.4.1.1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#N%E6%8A%98%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81"><span class="toc-number">1.4.1.2.</span> <span class="toc-text">N折交叉验证</span></a></li></ol></li></ol></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#9400D3;"><link itemprop="mainEntityOfPage" href="https://www.joaquinchou.com/academic_research/machine_learning/bias_and_variance/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Joaquin Chou"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="喵语小站"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Bias and Variance</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2020-08-11 00:00:00" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">2020-08-11</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">2.7k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">9m</span></span></span><span class="post-busuanzi"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span id="busuanzi_value_page_pv"></span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%96%B5%E8%AF%AD%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">喵语笔记</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="--text-color:#3776ab"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">机器学习</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><p>&emsp;&emsp;关于机器学习的入门课，个人感觉没太多新东西，只是当时有空就顺便写下哈哈哈，其实这些基础概念知乎博客应该比比皆是，但是我既然写过了不放上博客感觉自己好像白写了，呜呜呜。放上面有时候自己看看也有点小成就感(￣︶￣*))</p>
+<span id="more"></span>
+
+
+
+<h1 id="机器学习拟合的误差来源"><a href="#机器学习拟合的误差来源" class="headerlink" title="机器学习拟合的误差来源"></a><strong>机器学习拟合的误差来源</strong></h1><h2 id="误差来源"><a href="#误差来源" class="headerlink" title="误差来源"></a><strong>误差来源</strong></h2><p>&emsp;&emsp;为什么我们要了解机器学习拟合的误差的来源呢？因为只有从源头上把握误差的产生，我们才能更好的调整模型参数，进一步从训练集中找到一个估测函数$f^*$，使它无限接近于原问题的目标函数$\hat f$。然而使得<b>估测函数$f^*$与目标函数$\hat f$存在<font color='red'>差距的来源是偏差（bias）和方差（variance）</font></b>。</p>
+<h2 id="偏差和方差"><a href="#偏差和方差" class="headerlink" title="偏差和方差"></a><b>偏差和方差</b></h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a><b>概念</b></h3><p>&emsp;&emsp;偏差（bias）描述的是<b>在测试集上拟合出来的模型输出的均值与样本真实期望的距离</b>。简言之。就是拟合出来的模型在测试集上表现好不好。方差（variance）描述的是模型每次输出结果与输出期望之间的误差，简言之，就是<b>测试数据在模型上的离散程度</b>。</p>
+<p>&emsp;&emsp;如下图所示。如果以射靶为例子的话，样本的真实结果就是你瞄准的红心（目标函数$f^*$）,像第四个图，偏差就表示模型输出结果的期望和真实结果之间的距离，偏差越大，表示输出数据整体上远离目标函数，就根本没有瞄准靶心打（像第三和第四个图）；偏差越小，表示输出数据靠近目标函数，是瞄准靶心打的。方差越大，表示输出的结果相对于输出结果的均值很分散，方差越小，表示输出结果相对于输出结果的均值较为集中。</p>
+<p>&emsp;&emsp;所以就会出现以下四种情况——瞄准了打的也很集中，瞄准了但可能由于手不稳定打的很分散，根本没瞄准但手稳定打的也很集中，根本没瞄准且手也不稳定打的很分散。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5Z4ts.jpg" alt="a5Z4ts.jpg" border="0" style="zoom:50%"/ loading="lazy">
+
+
+
+<h3 id="均值和方差的估算"><a href="#均值和方差的估算" class="headerlink" title="均值和方差的估算"></a><b>均值和方差的估算</b></h3><p>&emsp;&emsp;讨论方差的估算可以理解，那为什么要讨论均值的估算呢？因为只有先估算出采样数据的均值，我们才能更好地计算偏差（数据均值和目标函数期望值的距离）。</p>
+<p>&emsp;&emsp;假设变量$x$的均值为$\mu$，方差为$\sigma^2$。为了估算出这两个值，我们对变量$x$进行了$N$次采样，计算$N$次的平均值$m$其实并不等于$\mu$（除非进行无限点的划分），$m$的值会$\mu$上下波动，但是我们可以通过这$N$个点的期望去计算出$\mu$。这种估计叫<b>无偏估计（unbiased estimator）</b>。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5Zspt.jpg" alt="a5Zspt.jpg" border="0" / loading="lazy">
+
+<p>那我们怎么衡量$N$个采样点对于均值$\mu$的离散情况呢？可以采用以下公式计算$var[m]$，其中可见$N$值越大代表数据越集中，越小代表数据越分散。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5Zy1P.jpg" alt="a5Zy1P.jpg" border="0" / loading="lazy">
+
+<p>&emsp;&emsp;以上就是均值的估算，方差的估计可以采用以下公式。通过$N$次有限次采样的值可计算得到一个$s^2$，我们可以使用$s^2$去估计$\sigma^2$，通过计算$E(s^2)$我们发现并不恰好等于$\sigma^2$，这种估计叫<b>有偏估计(biased estimator)</b>。</p>
+<p>&emsp;&emsp;&emsp;可以看出，采样次数$N$越大，$s^2$与$\sigma^2$之间估测的差距会减小。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5Zhkj.jpg" alt="a5Zhkj.jpg" border="0" / loading="lazy">
+
+
+
+<h2 id="模型复杂度的影响"><a href="#模型复杂度的影响" class="headerlink" title="模型复杂度的影响"></a><b>模型复杂度的影响</b></h2><p>&emsp;&emsp;在Regrssion宝可梦的案例中，我们只训练得到了一个函数，但是实际上我们需要得到足够多的函数再取均值才能知道偏差的大小。所以在宝可梦的案例中，我们假设有很多个平行宇宙，如下图所示，并且在这些宇宙上抓10只宝可梦去训练同一个模型，可得到不同的函数，可以求得函数的均值。但现实生活可能不存在平行宇宙，此时可理解为同时进行了多次实验，并且将实验中的数据同时用同一模型去求得不同的函数。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5Z5hn.jpg" alt="a5Z5hn.jpg" border="0" / loading="lazy">
+
+<p>由于平行宇宙中宝可梦的数据不同，使用同一模型得到的$f^*$也不同。如下图所示。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5ZqnU.jpg" alt="a5ZqnU.jpg" border="0" / loading="lazy">
+
+<p>为了说明模型复杂度对方差的影响，我们对于100个平行世界的数据，使用了复杂度不同的三个模型，得到结果如下。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5ep1x.jpg" alt="a5ep1x.jpg" border="0" / loading="lazy">
+
+<h3 id="不同模型对方差的影响"><a href="#不同模型对方差的影响" class="headerlink" title="不同模型对方差的影响"></a><b>不同模型对方差的影响</b></h3><p>&emsp;&emsp;方差主要看的是训练数据在模型上的离散程度。由上图可以得出以下结论：</p>
+<p>&emsp;&emsp;对于不同模型的方差，由一次模型的训练数据比较集中，五次模型的训练数据比较分散，可以得出<b>越简单的模型，方差是越小（因为模型越简单越不容易受训练集的影响），越复杂的模型，方差越大</b>。</p>
+<h3 id="不同模型对偏差的影响"><a href="#不同模型对偏差的影响" class="headerlink" title="不同模型对偏差的影响"></a><b>不同模型对偏差的影响</b></h3><p>&emsp;&emsp;偏差要看的模型的均值和目标函数的期望的距离。问题来了，在宝可梦的案例中，我们无法得知具体的目标函数。所以我们的做法是假设一个最佳函数$\hat f$（如下图黑线所示），通过该函数生成一系列数据模拟宝可梦的数据，再进行采样，利用采样数据去训练模型。</p>
+<p>为了说明模型复杂度对偏差的影响，我们对于5000个平行世界的数据，使用了复杂度不同的三个模型，得到结果如下。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5eFBD.jpg" alt="a5eFBD.jpg" border="0" / loading="lazy">
+
+<p>由上图可以得出以下结论：</p>
+<p>&emsp;&emsp;对于不同模型的偏差，由一次模型的均值（蓝线）和目标函数差的很多，五次模型均值（蓝线）和目标函数差的较小，可以得出<b>越简单的模型，偏差越大，越复杂的模型，偏差越小</b>。</p>
+<h3 id="产生影响的原因"><a href="#产生影响的原因" class="headerlink" title="产生影响的原因"></a><b>产生影响的原因</b></h3><p>&emsp;&emsp;为什么不同复杂情况的模型会对方差和偏差产生这样的影响呢？</p>
+<p>如下图所示。假设所有的解函数和目标函数都在集合中。</p>
+<p>如果模型比较简单，解函数的集合会比较小，此时数据也比较集中，但可能解集合中不包含目标函数，此时我们看到的就是偏差大，方差小的情况。如果模型比较复杂，解函数的集合会比较大（复杂模型可通过参数设置转化为简单模型，故解函数集合较大），此时数据会比较分散，但可能解集合中一般包含目标函数，此时我们看到的就是偏差小，方差大的情况。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5e9c6.jpg" alt="a5e9c6.jpg" border="0" / loading="lazy">
+
+<h3 id="造成影响的后果和解决方法"><a href="#造成影响的后果和解决方法" class="headerlink" title="造成影响的后果和解决方法"></a><b>造成影响的后果和解决方法</b></h3><p>&emsp;&emsp;通过以下曲线图，我们可以看出<font color='red'><b>模型越简单，意味着偏差越大，造成的后果是欠拟合</b></font>。具体表现是模型在训练集上的误差较大。解决欠拟合问题一般的思路有两个。</p>
+<ol>
+<li>模型增加更多的输入特征；</li>
+<li>换一个更复杂的模型。</li>
+</ol>
+<p><font color='red'><b>模型越复杂，意味着方差越大，造成的后果是过拟合</b></font>。具体表现是模型在测试集上的误差较大。解决过拟合问题一般的思路也有两个。</p>
+<ol>
+<li>增加训练数据；（因为方差大的表现是数据分散，增加数据能相对提高集中度，但实际操作数据难获取）</li>
+<li>采用正则化。（加个惩罚项使得输入参数的影响尽量小，曲线尽量光滑，具体做法参考Regression）</li>
+</ol>
+<img src="https://s1.ax1x.com/2020/08/08/a5einO.jpg" alt="a5einO.jpg" border="0" / loading="lazy">
+
+
+
+<h2 id="模型的选择"><a href="#模型的选择" class="headerlink" title="模型的选择"></a><b>模型的选择</b></h2><p>&emsp;&emsp;通过模型复杂度的影响我们可以看出，偏差和方差之间是相互制衡的，具体可通过一个模型来表现。那怎么选择出一个好的模型呢？如下图所示，我们能否简单地认为在已有的测试集上$Error$最小的模型表现一定是最好的呢？</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5eEAH.jpg" alt="a5eEAH.jpg" border="0" / loading="lazy">
+
+<p>&emsp;&emsp;其实这种想法不正确，往往在未知测试集上得到的结果是大于你之前测得的结果。<b>这个时候你总不能回头再调节模型的参数让他在测试集上表现的更好吧。回头调节的危害是相当于你把测试集当成训练集用，在测试集上表现好的同时也容易产生过拟合。当实际部署到应用时泛化能力会很差</b>。</p>
+<p>&emsp;&emsp;就好比你今年参加高考，你可以不断地利用模拟题或往年真题去寻找知识漏洞，但是你总不能用今年的高考试题去进行知识捡漏，假设你考试前真的做到一模一样的试题，那你确实可以考得很好，但万一试题产生较大变动，可能结果会差强人意。所以<b>正确的做法是在测试前一旦确定了模型，最好不要再改动</b>。</p>
+<h3 id="交叉验证"><a href="#交叉验证" class="headerlink" title="交叉验证"></a><b>交叉验证</b></h3><h4 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a><b>概念</b></h4><p>&emsp;&emsp;既然不能利用测试集进行调参，那怎样做比较合理呢？俗话说“解铃还须系铃人”，我们又回到了训练集，将训练集的数据按照一定的比例分为训练集和验证集，在训练集上训练出模型，通过验证集去选择误差最小的模型。这就是<b>交叉验证（Cross Validation）</b>。换言之，将准考考试的资料（训练集）划分一部分出来当作模拟考试（验证集）用，寻找知识漏洞。这才是常规做法。而最后的高考（测试集）只有一次。（目的是检测模型的泛化能力）</p>
+<h4 id="N折交叉验证"><a href="#N折交叉验证" class="headerlink" title="N折交叉验证"></a><b>N折交叉验证</b></h4><p>&emsp;&emsp;既然已经确定了将训练集分成训练集和验证集，那怎样的分法比较好呢？有一种方法叫<b>N折交叉验证（N-fold Cross Validation）</b>。它是指将整个训练集分为$N$份，然后最后一份作为验证集，前$N-1$份作为训练集；倒数第二份作为验证集，剩下$N-1$作为训练集；…；一直到第一份作为验证集，剩下$N-1$份作为训练集。（总共有$N$份验证集，每份验证集对应着$N-1$份训练集）再用不同模型去进行$N$次训练，最终选择一个平均误差最小的模型。下图以$N=3$为例。</p>
+<img src="https://s1.ax1x.com/2020/08/08/a5eugP.jpg" alt="a5eugP.jpg" border="0" / loading="lazy">
+
+
+
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">来都来了，不点一下麽？(●ˇ∀ˇ●)</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/alipay.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><span class="icon iconify" data-icon="ri:alipay-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/QQ.png" alt="QQ 支付" title="QQ 支付"></a><div><span style="color:#12B7F5"><span class="icon iconify" data-icon="ri:qq-line"></span></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png"><img loading="lazy" src="https://joaquinchou-1259120139.cos.ap-guangzhou.myqcloud.com/img/img_config/wechat.png" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><span class="icon iconify" data-icon="ri:wechat-pay-line"></span></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Joaquin Chou</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://www.joaquinchou.com/academic_research/machine_learning/bias_and_variance/" title="Bias and Variance">https://www.joaquinchou.com/academic_research/machine_learning/bias_and_variance/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul><script>document.addEventListener('copy', function (event) {
+  const clipboardData = event.clipboardData || window.clipboardData;
+  if (!clipboardData) { return; }
+  const text = window.getSelection().toString();
+  if (text) {
+    event.preventDefault();
+    clipboardData.setData('text/plain', text + '\n\n本文作者：Joaquin Chou\n本文链接：https://www.joaquinchou.com/academic_research/machine_learning/bias_and_variance/\n版权声明：本博客所有文章除特别声明外，均默认采用 CC BY-NC-SA 4.0 许可协议。');
+  }
+});</script></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/academic_research/machine_learning/classification/" rel="prev" title="Classification"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">Classification</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/academic_research/machine_learning/regression/" rel="next" title="Regression"><span class="post-nav-text">Regression</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>可以点击下方进行评论哟！</span><br></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/academic_research/machine_learning/bias_and_variance/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2023 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> Joaquin Chou</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v6.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-11-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div id="busuanzi"><span id="busuanzi_container_site_uv" title="总访客量"><span><span class="icon iconify" data-icon="ri:user-line"></span></span><span id="busuanzi_value_site_uv"></span></span><span class="footer-separator">|</span><span id="busuanzi_container_site_pv" title="总访问量"><span><span class="icon iconify" data-icon="ri:eye-line"></span></span><span id="busuanzi_value_site_pv"></span></span><script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#9400D3" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script defer src="https://fastly.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script><script defer src="https://fastly.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script><script defer src="/js/search/algolia-search.js" type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"></div><div class="algolia-results"><div id="algolia-stats"></div><div id="algolia-hits"></div><div class="algolia-pagination" id="algolia-pagination"></div></div></div><script>function initMourn() {
+  const date = new Date();
+  const today = (date.getMonth() + 1) + "-" + date.getDate()
+  const mourn_days = ["4-4","9-18","3-3"]
+  if (mourn_days.includes(today)) {
+    document.documentElement.style.filter = "grayscale(1)";
+  }
+}
+initMourn();</script></body></html>
